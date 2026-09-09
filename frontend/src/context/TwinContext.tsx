@@ -242,8 +242,12 @@ export const TwinProvider: React.FC<{ children: React.ReactNode }> = ({ children
         alertMsg = door ? "WARNING: Cold vault door opened. Atmospheric thermal ingress." : null;
         simName = door ? "Insulated Seal Breach (Door Open)" : "";
       } else if (action === 'solar-failure') {
-        solar = 45.0;
-        alertMsg = "ADVISORY: Solar PV generation dropped below threshold (45 W). Battery discharging.";
+        solar = 28.0;
+        batt = 18.5;
+        fan = 620;
+        health = 'warning';
+        temp = prev.temperature + 2.4;
+        alertMsg = "WARNING: Solar PV generation collapsed (28 W). Battery down to 18.5%. Compressor throttling.";
         simName = "Photovoltaic Shading / Monsoon Cloud Cover";
       } else if (action === 'battery-low') {
         batt = 14.5;

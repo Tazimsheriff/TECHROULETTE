@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Text, Html } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useTwin } from '../../context/TwinContext';
 import { Batch } from '../../types';
@@ -77,38 +77,15 @@ const TomatoCrate: React.FC<{
         )}
       </group>
 
-      {/* Batch ID 3D Text Label */}
-      <Text
-        position={[0, 0.22, 0.36]}
-        fontSize={0.11}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
-        font="https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEny0FZhsfKu5WU4zr3E_al061wqUwwwd-d.woff2"
-      >
-        {batch.id}
-      </Text>
-
-      {/* HTML tooltip if hovered */}
-      {hovered && (
-        <Html distanceFactor={10} position={[0, 0.7, 0]} center pointerEvents="none">
-          <div
-            style={{
-              backgroundColor: '#0f172a',
-              color: '#fff',
-              padding: '4px 8px',
-              borderRadius: '4px',
-              fontSize: '11px',
-              fontFamily: 'monospace',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-              border: '1px solid #334155'
-            }}
-          >
-            <strong>{batch.id}</strong> | Score: {batch.qualityScore}% | {batch.shelfLifeDays}d life
-          </div>
-        </Html>
-      )}
+      {/* Batch ID Procedural Canvas Plate */}
+      <mesh position={[0, 0.22, 0.36]}>
+        <planeGeometry args={[0.55, 0.22]} />
+        <meshBasicMaterial color="#0f172a" />
+      </mesh>
+      <mesh position={[0, 0.22, 0.365]}>
+        <planeGeometry args={[0.5, 0.18]} />
+        <meshBasicMaterial color={color} />
+      </mesh>
     </group>
   );
 };
@@ -428,50 +405,52 @@ export const ColdStorageScene: React.FC<{
         camera={{ position: [0, 4.2, 6.2], fov: 42 }}
         style={{ width: '100%', height: '100%' }}
       >
-        {/* Dynamic environmental lighting */}
-        <ambientLight intensity={0.85} color={ambientColor} />
-        <directionalLight
-          position={[5, 8, 5]}
-          intensity={1.1}
-          castShadow
-          shadow-mapSize={[1024, 1024]}
-        />
-        <pointLight
-          position={[0, 2.6, 0]}
-          intensity={isAlarm ? 1.8 : 0.6}
-          color={isAlarm ? '#ef4444' : '#bae6fd'}
-          distance={8}
-        />
-
-        {/* Cold Storage Architecture */}
-        <RoomEnclosure temperature={state.temperature} />
-        <StorageShelves />
-        <CoolingUnit coolingOn={state.coolingOn} health={state.refrigeratorHealth} />
-        <InsulatedDoor doorOpen={state.doorOpen} />
-        <SolarArray solarPower={state.solarPower} />
-        <BatteryCabinet batteryPercent={state.batteryPercent} />
-        <AlarmBeacon active={isAlarm} />
-
-        {/* 6 Batches of Tomato Crates */}
-        {state.batches.map((batch) => (
-          <TomatoCrate
-            key={batch.id}
-            batch={batch}
-            isSelected={selectedBatchId === batch.id}
-            onSelect={handleSelect}
+        <Suspense fallback={null}>
+          {/* Dynamic environmental lighting */}
+          <ambientLight intensity={0.85} color={ambientColor} />
+          <directionalLight
+            position={[5, 8, 5]}
+            intensity={1.1}
+            castShadow
+            shadow-mapSize={[1024, 1024]}
           />
-        ))}
-
-        {/* Orbit Camera Controls */}
-        {enableControls && (
-          <OrbitControls
-            enableDamping
-            dampingFactor={0.05}
-            minDistance={3.5}
-            maxDistance={12}
-            maxPolarAngle={Math.PI / 2 - 0.05}
+          <pointLight
+            position={[0, 2.6, 0]}
+            intensity={isAlarm ? 1.8 : 0.6}
+            color={isAlarm ? '#ef4444' : '#bae6fd'}
+            distance={8}
           />
-        )}
+
+          {/* Cold Storage Architecture */}
+          <RoomEnclosure temperature={state.temperature} />
+          <StorageShelves />
+          <CoolingUnit coolingOn={state.coolingOn} health={state.refrigeratorHealth} />
+          <InsulatedDoor doorOpen={state.doorOpen} />
+          <SolarArray solarPower={state.solarPower} />
+          <BatteryCabinet batteryPercent={state.batteryPercent} />
+          <AlarmBeacon active={isAlarm} />
+
+          {/* 6 Batches of Tomato Crates */}
+          {state.batches.map((batch) => (
+            <TomatoCrate
+              key={batch.id}
+              batch={batch}
+              isSelected={selectedBatchId === batch.id}
+              onSelect={handleSelect}
+            />
+          ))}
+
+          {/* Orbit Camera Controls */}
+          {enableControls && (
+            <OrbitControls
+              enableDamping
+              dampingFactor={0.05}
+              minDistance={3.5}
+              maxDistance={12}
+              maxPolarAngle={Math.PI / 2 - 0.05}
+            />
+          )}
+        </Suspense>
       </Canvas>
     </div>
   );

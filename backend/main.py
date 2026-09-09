@@ -173,11 +173,15 @@ def trigger_simulation(action: str):
 
     elif action == "solar-failure":
         CURRENT_STATE = CURRENT_STATE.copy(update={
-            "solarPower": 45.0, # Heavy monsoon overcast
+            "solarPower": 28.0,  # Heavy monsoon overcast
+            "batteryPercent": 18.5,  # Accelerated battery depletion
+            "fanRpm": 620.0,     # Compressor load shedding
+            "temperature": round(CURRENT_STATE.temperature + 2.4, 1),
+            "refrigeratorHealth": "warning",
             "activeSimulation": "Photovoltaic Shading / Monsoon Cloud Cover",
-            "activeAlert": "ADVISORY: Solar PV generation dropped below auxiliary threshold (45 W). Battery discharging."
+            "activeAlert": "WARNING: Solar PV generation collapsed (28 W). Battery down to 18.5%. Compressor throttling."
         })
-        CURRENT_STATE = evaluate_kinetics(CURRENT_STATE, delta_minutes=30.0)
+        CURRENT_STATE = evaluate_kinetics(CURRENT_STATE, delta_minutes=45.0)
 
     elif action == "battery-low":
         CURRENT_STATE = CURRENT_STATE.copy(update={
