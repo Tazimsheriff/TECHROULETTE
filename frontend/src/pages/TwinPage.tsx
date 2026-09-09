@@ -4,10 +4,7 @@ import { ColdStorageScene } from '../components/3d/ColdStorageScene';
 import { Link } from 'react-router-dom';
 import {
   Box,
-  Eye,
   Layers,
-  Thermometer,
-  ShieldCheck,
   FileText,
   RotateCcw,
   Zap,
@@ -15,55 +12,55 @@ import {
 } from 'lucide-react';
 
 export const TwinPage: React.FC = () => {
-  const { state, selectedBatchId, setSelectedBatchId, triggerSimulation } = useTwin();
+  const { state, selectedBatchId, triggerSimulation } = useTwin();
   const [activeTab, setActiveTab] = useState<'crates' | 'equipment'>('crates');
 
   const selectedBatch = state.batches.find((b) => b.id === selectedBatchId) || state.batches[0];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* Page Title & Status */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      {/* Title & Actions */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#0f172a' }}>
-            Interactive 3D Digital Twin Viewport
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)' }}>
+            Spatial Digital Twin // Facility {state.facilityId}
           </h2>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-            Spatial representation of Facility {state.facilityId} • Real-time raycasting & mesh telemetry
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            REAL-TIME RAYCAST ENGINE • HARDWARE MESH TELEMETRY BINDING
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '4px' }}>
           <button
             className="btn btn-sm"
             onClick={() => triggerSimulation('reset')}
           >
-            <RotateCcw size={13} />
-            Reset Camera & Twin
+            <RotateCcw size={11} />
+            Reset Spatial Twin
           </button>
           <button
             className="btn btn-sm btn-danger"
             onClick={() => triggerSimulation('cooling-failure')}
           >
-            <Zap size={13} />
-            Trip Cooling Unit
+            <Zap size={11} />
+            Compressor Trip
           </button>
         </div>
       </div>
 
       {/* Main 3D Work Area */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: '0.75rem' }}>
         {/* 3D Scene Viewport */}
         <div className="panel" style={{ marginBottom: 0, height: '620px', display: 'flex', flexDirection: 'column' }}>
           <div className="panel-header">
             <div className="panel-title">
-              <Box size={16} color="#0284c7" />
-              Chamber Interior & Equipment Roster
+              <Box size={14} color="#0369a1" />
+              Chamber Spatial Layout & Subsystems
             </div>
-            <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
               <span>TEMP: <strong>{state.temperature}°C</strong></span>
-              <span>COMPRESSOR: <strong>{state.coolingOn ? 'ON' : 'OFF'}</strong></span>
-              <span>DOOR: <strong>{state.doorOpen ? 'AJAR' : 'CLOSED'}</strong></span>
+              <span>CHILLER: <strong>{state.coolingOn ? 'ONLINE' : 'STOP'}</strong></span>
+              <span>DOOR: <strong>{state.doorOpen ? 'AJAR' : 'SEALED'}</strong></span>
             </div>
           </div>
 
@@ -71,47 +68,51 @@ export const TwinPage: React.FC = () => {
             <ColdStorageScene enableControls={true} />
           </div>
 
-          <div style={{ padding: '0.65rem 1rem', backgroundColor: '#fafbfd', borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            <span>Controls: <strong>Left Click + Drag</strong> to Orbit | <strong>Right Click + Drag</strong> to Pan | <strong>Scroll</strong> to Zoom</span>
-            <span>Click any tomato crate to focus metadata</span>
+          <div style={{ padding: '0.4rem 0.75rem', backgroundColor: 'var(--bg-surface-header)', borderTop: '1px solid var(--border-hairline)', display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+            <span>LEFT CLICK + DRAG: ORBIT | RIGHT CLICK: PAN | SCROLL: ZOOM</span>
+            <span>RAYCAST TARGET: CRATE SELECTION ACTIVE</span>
           </div>
         </div>
 
         {/* Side Diagnostic Panel */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {/* Diagnostic Tabs */}
-          <div style={{ display: 'flex', gap: '0.25rem', padding: '4px', backgroundColor: '#e2e8f0', borderRadius: '4px' }}>
+          <div style={{ display: 'flex', gap: '2px', padding: '2px', backgroundColor: 'var(--bg-control)', borderRadius: 'var(--radius-sharp)' }}>
             <button
               style={{
                 flex: 1,
-                padding: '6px',
-                fontSize: '0.8rem',
-                fontWeight: 600,
+                padding: '5px',
+                fontSize: '11px',
+                fontWeight: 700,
+                fontFamily: 'var(--font-mono)',
+                textTransform: 'uppercase',
                 border: 'none',
-                borderRadius: '3px',
-                backgroundColor: activeTab === 'crates' ? '#ffffff' : 'transparent',
-                color: activeTab === 'crates' ? '#0f172a' : '#64748b',
+                borderRadius: 'var(--radius-sharp)',
+                backgroundColor: activeTab === 'crates' ? 'var(--bg-surface)' : 'transparent',
+                color: activeTab === 'crates' ? 'var(--text-primary)' : 'var(--text-muted)',
                 cursor: 'pointer'
               }}
               onClick={() => setActiveTab('crates')}
             >
-              Batch Crate Inspector
+              Produce Lot Diagnostics
             </button>
             <button
               style={{
                 flex: 1,
-                padding: '6px',
-                fontSize: '0.8rem',
-                fontWeight: 600,
+                padding: '5px',
+                fontSize: '11px',
+                fontWeight: 700,
+                fontFamily: 'var(--font-mono)',
+                textTransform: 'uppercase',
                 border: 'none',
-                borderRadius: '3px',
-                backgroundColor: activeTab === 'equipment' ? '#ffffff' : 'transparent',
-                color: activeTab === 'equipment' ? '#0f172a' : '#64748b',
+                borderRadius: 'var(--radius-sharp)',
+                backgroundColor: activeTab === 'equipment' ? 'var(--bg-surface)' : 'transparent',
+                color: activeTab === 'equipment' ? 'var(--text-primary)' : 'var(--text-muted)',
                 cursor: 'pointer'
               }}
               onClick={() => setActiveTab('equipment')}
             >
-              Hardware Subsystems
+              Hardware Nodes
             </button>
           </div>
 
@@ -120,7 +121,7 @@ export const TwinPage: React.FC = () => {
             <div className="panel" style={{ flex: 1, marginBottom: 0 }}>
               <div className="panel-header">
                 <div className="panel-title">
-                  <Layers size={15} />
+                  <Layers size={13} />
                   Selected Crate: {selectedBatch.id}
                 </div>
                 <span className={`badge badge-${selectedBatch.risk}`}>
@@ -128,18 +129,18 @@ export const TwinPage: React.FC = () => {
                 </span>
               </div>
               <div className="panel-body">
-                <div style={{ marginBottom: '1.25rem' }}>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>CROP & BOTANICAL VARIETY</div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>{selectedBatch.variety}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{selectedBatch.product}</div>
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>BOTANICAL TAXONOMY</div>
+                  <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>{selectedBatch.variety}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{selectedBatch.product}</div>
                 </div>
 
-                <div style={{ marginBottom: '1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px' }}>
-                    <span>Biological Freshness Index</span>
-                    <span className="font-mono">{selectedBatch.qualityScore} / 100</span>
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', fontWeight: 700, fontFamily: 'var(--font-mono)', marginBottom: '3px' }}>
+                    <span>BIOLOGICAL FRESHNESS INDEX</span>
+                    <span>{selectedBatch.qualityScore} / 100</span>
                   </div>
-                  <div className="meter-container" style={{ height: '8px' }}>
+                  <div className="meter-container" style={{ height: '5px' }}>
                     <div
                       className={`meter-fill ${selectedBatch.risk}`}
                       style={{ width: `${selectedBatch.qualityScore}%` }}
@@ -148,46 +149,44 @@ export const TwinPage: React.FC = () => {
                 </div>
 
                 <div className="inspector-field">
-                  <span className="label">Estimated Remaining Shelf Life:</span>
-                  <span className="val" style={{ color: selectedBatch.shelfLifeDays < 2 ? 'var(--status-critical)' : '#0f172a' }}>
+                  <span className="label">Remaining Shelf Life:</span>
+                  <span className="val" style={{ color: selectedBatch.shelfLifeDays < 2 ? 'var(--scada-alarm)' : 'inherit' }}>
                     {selectedBatch.shelfLifeDays} Days
                   </span>
                 </div>
 
                 <div className="inspector-field">
-                  <span className="label">Spatial Coordinates in Vault:</span>
-                  <span className="val font-mono">[{selectedBatch.cratePosition.join(', ')}]</span>
+                  <span className="label">Chamber Grid Coords:</span>
+                  <span className="val">[{selectedBatch.cratePosition.join(', ')}]</span>
                 </div>
 
                 <div className="inspector-field">
-                  <span className="label">Batch Net Weight:</span>
+                  <span className="label">Lot Net Mass:</span>
                   <span className="val">{selectedBatch.quantityKg} kg</span>
                 </div>
 
                 <div className="inspector-field">
-                  <span className="label">Producer Cooperative:</span>
-                  <span className="val" style={{ fontSize: '0.75rem' }}>{selectedBatch.producerCoop}</span>
+                  <span className="label">Producer Entity:</span>
+                  <span className="val" style={{ fontSize: '10px' }}>{selectedBatch.producerCoop}</span>
                 </div>
 
                 <div className="inspector-field">
-                  <span className="label">Harvest Date:</span>
+                  <span className="label">Harvest Timestamp:</span>
                   <span className="val">{selectedBatch.harvestDate}</span>
                 </div>
 
-                <div style={{ padding: '0.75rem', backgroundColor: '#f8fafc', border: '1px solid var(--border-subtle)', borderRadius: '4px', margin: '1rem 0', fontSize: '0.8rem' }}>
+                <div style={{ padding: '0.5rem 0.65rem', backgroundColor: 'var(--bg-surface-subtle)', border: '1px solid var(--border-hairline)', borderRadius: '2px', margin: '0.75rem 0', fontSize: '11px' }}>
                   <strong>Operational Protocol:</strong> {selectedBatch.recommendedAction}
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                  <Link
-                    to={`/batch/${selectedBatch.id}`}
-                    className="btn btn-primary"
-                    style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
-                  >
-                    <FileText size={14} />
-                    Open Product Passport
-                  </Link>
-                </div>
+                <Link
+                  to={`/batch/${selectedBatch.id}`}
+                  className="btn btn-primary"
+                  style={{ width: '100%', padding: '0.45rem', fontSize: '11px' }}
+                >
+                  <FileText size={12} />
+                  Open Product Passport & Audit Ledger
+                </Link>
               </div>
             </div>
           ) : (
@@ -195,54 +194,54 @@ export const TwinPage: React.FC = () => {
             <div className="panel" style={{ flex: 1, marginBottom: 0 }}>
               <div className="panel-header">
                 <div className="panel-title">
-                  <Info size={15} />
-                  Facility Hardware Subsystems
+                  <Info size={13} />
+                  Facility Instrumentation Nodes
                 </div>
               </div>
-              <div className="panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ padding: '0.75rem', border: '1px solid var(--border-subtle)', borderRadius: '4px', backgroundColor: '#fafbfd' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <strong style={{ fontSize: '0.85rem' }}>Chilling Evaporator & Fan</strong>
+              <div className="panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ padding: '0.5rem 0.65rem', border: '1px solid var(--border-hairline)', borderRadius: '2px', backgroundColor: 'var(--bg-surface-subtle)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                    <strong style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>EVAPORATOR BLOWER [EVAP-01]</strong>
                     <span className={`badge badge-${state.refrigeratorHealth === 'failed' ? 'critical' : state.coolingOn ? 'safe' : 'warning'}`}>
                       {state.refrigeratorHealth.toUpperCase()}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                    Speed: {state.fanRpm} RPM | Thermal load: {state.compressorDutyCycle}%
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                    RATING: 1.8 kW | SPEED: {state.fanRpm} RPM | DUTY: {state.compressorDutyCycle}%
                   </div>
                 </div>
 
-                <div style={{ padding: '0.75rem', border: '1px solid var(--border-subtle)', borderRadius: '4px', backgroundColor: '#fafbfd' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <strong style={{ fontSize: '0.85rem' }}>Solar PV Array (Roof)</strong>
-                    <span className="badge badge-safe">ONLINE</span>
+                <div style={{ padding: '0.5rem 0.65rem', border: '1px solid var(--border-hairline)', borderRadius: '2px', backgroundColor: 'var(--bg-surface-subtle)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                    <strong style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>ROOFTOP SOLAR PV [PV-ARRAY-A]</strong>
+                    <span className="badge badge-safe">ACTIVE</span>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                    Output: {state.solarPower} W / {state.solarMaxPower} W peak | Influx: 820 W/m²
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                    OUTPUT: {state.solarPower} W / {state.solarMaxPower} W PEAK | IRRADIANCE: 820 W/m²
                   </div>
                 </div>
 
-                <div style={{ padding: '0.75rem', border: '1px solid var(--border-subtle)', borderRadius: '4px', backgroundColor: '#fafbfd' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <strong style={{ fontSize: '0.85rem' }}>Lithium Battery Rack (LiFePO4)</strong>
+                <div style={{ padding: '0.5rem 0.65rem', border: '1px solid var(--border-hairline)', borderRadius: '2px', backgroundColor: 'var(--bg-surface-subtle)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                    <strong style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>LiFePO4 BATTERY BANK [BAT-01]</strong>
                     <span className={`badge badge-${state.batteryPercent < 20 ? 'critical' : 'safe'}`}>
                       {state.batteryPercent}% CHARGE
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                    Voltage: 51.2 V | Estimated Run-time: {(state.batteryPercent / 12).toFixed(1)} hrs
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                    51.2 VDC BUS | CAPACITY: 2.4 kWh | ESTIMATED BUFFER: {(state.batteryPercent / 12).toFixed(1)} HRS
                   </div>
                 </div>
 
-                <div style={{ padding: '0.75rem', border: '1px solid var(--border-subtle)', borderRadius: '4px', backgroundColor: '#fafbfd' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <strong style={{ fontSize: '0.85rem' }}>Insulated Chamber Seal Door</strong>
+                <div style={{ padding: '0.5rem 0.65rem', border: '1px solid var(--border-hairline)', borderRadius: '2px', backgroundColor: 'var(--bg-surface-subtle)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                    <strong style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>INSULATED VAULT ACCESS DOOR</strong>
                     <span className={`badge badge-${state.doorOpen ? 'warning' : 'safe'}`}>
                       {state.doorOpen ? 'AJAR' : 'SEALED'}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                    Magnetic reed switch: {state.doorOpen ? 'CONTACT OPEN (Thermal Leak)' : 'SECURE'}
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                    MAGNETIC REED SWITCH: {state.doorOpen ? 'CIRCUIT OPEN (Heat Ingress)' : 'COMPRESSION CLOSED'}
                   </div>
                 </div>
               </div>

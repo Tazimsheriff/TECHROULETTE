@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
 import {
-  BookOpen,
   Globe,
   Download,
-  CheckCircle,
-  FileText,
-  MapPin,
-  Thermometer,
-  ShieldCheck,
-  ChevronRight,
-  ExternalLink
+  FileText
 } from 'lucide-react';
 
 interface AdaptationProfile {
@@ -72,171 +65,163 @@ export const KnowledgeHubPage: React.FC = () => {
   const currentProfile = profiles.find((p) => p.country === selectedCountry) || profiles[0];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       {/* Title */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '2px 8px', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '4px', fontSize: '0.725rem', fontWeight: 600, color: '#166534', marginBottom: '0.35rem' }}>
-            <Globe size={13} />
-            UN SOUTH-SOUTH & TRIANGULAR COOPERATION (SSTC) FRAMEWORK
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '2px 6px', backgroundColor: 'var(--scada-normal-bg)', border: '1px solid var(--scada-normal-border)', borderRadius: '2px', fontSize: '10px', fontWeight: 700, color: 'var(--scada-normal)', fontFamily: 'var(--font-mono)', marginBottom: '2px' }}>
+            <Globe size={11} />
+            UN-FAO SOUTH-SOUTH & TRIANGULAR COOPERATION (SSTC) PROTOCOL
           </div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#0f172a' }}>
-            Food-Safety Knowledge Hub & Solution Exchange
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)' }}>
+            Knowledge Hub // Cross-Border Commodity Blueprints
           </h2>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-            Open-source blueprints, local adaptation profiles, and standard operating procedures (SOPs) for decentralized cold storage
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            OPEN HARDWARE SCHEMATICS & STANDARD OPERATING PROCEDURES (SOPS)
           </p>
         </div>
 
         <button className="btn btn-sm btn-primary">
-          <Download size={13} /> Download Open Blueprint (PDF)
+          <Download size={11} /> Export Blueprint PDF
         </button>
       </div>
 
-      {/* South-South Transferability Section */}
-      <div className="panel" style={{ borderRadius: 'var(--radius-md)' }}>
+      {/* Blueprint Selector Panel */}
+      <div className="panel" style={{ marginBottom: 0 }}>
         <div className="panel-header">
           <div className="panel-title">
-            <Globe size={16} color="#0284c7" />
-            Cross-Border Commodity Blueprints (Select Region)
+            <Globe size={13} color="#0369a1" />
+            Regional Commodity Profiles (Select Global South Node)
           </div>
         </div>
         <div className="panel-body">
-          {/* Country Selection Buttons */}
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          {/* Country Selection */}
+          <div style={{ display: 'flex', gap: '4px', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
             {profiles.map((p) => (
               <button
                 key={p.country}
-                className={`btn ${selectedCountry === p.country ? 'btn-primary' : ''}`}
-                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}
+                className={`btn btn-sm ${selectedCountry === p.country ? 'btn-primary' : ''}`}
                 onClick={() => setSelectedCountry(p.country)}
               >
-                <span style={{ fontSize: '1.1rem' }}>{p.flag}</span>
+                <span>{p.flag}</span>
                 {p.country} ({p.commodity.split(' ')[0]})
               </button>
             ))}
           </div>
 
-          {/* Active Profile Details */}
+          {/* Active Blueprint Spec */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1.2fr 1fr',
-            gap: '1.5rem',
-            padding: '1.25rem',
-            backgroundColor: '#f8fafc',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-sm)'
+            gap: '1rem',
+            padding: '0.75rem',
+            backgroundColor: 'var(--bg-surface-subtle)',
+            border: '1px solid var(--border-hairline)',
+            borderRadius: '2px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px'
           }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '1.5rem' }}>{currentProfile.flag}</span>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.35rem' }}>
+                <span style={{ fontSize: '1.25rem' }}>{currentProfile.flag}</span>
+                <h3 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase' }}>
                   {currentProfile.commodity} — {currentProfile.country}
                 </h3>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', margin: '1rem 0' }}>
-                <div style={{ padding: '0.65rem', backgroundColor: '#ffffff', border: '1px solid var(--border-subtle)', borderRadius: '4px' }}>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Target Temperature</div>
-                  <div style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.9rem', color: '#0284c7' }}>
-                    {currentProfile.targetTemp}
-                  </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', margin: '0.5rem 0' }}>
+                <div style={{ padding: '0.45rem', backgroundColor: '#ffffff', border: '1px solid var(--border-hairline)' }}>
+                  <div style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Target Temperature</div>
+                  <div style={{ fontWeight: 700, color: '#0369a1' }}>{currentProfile.targetTemp}</div>
                 </div>
 
-                <div style={{ padding: '0.65rem', backgroundColor: '#ffffff', border: '1px solid var(--border-subtle)', borderRadius: '4px' }}>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Target Humidity</div>
-                  <div style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>
-                    {currentProfile.targetHumidity}
-                  </div>
+                <div style={{ padding: '0.45rem', backgroundColor: '#ffffff', border: '1px solid var(--border-hairline)' }}>
+                  <div style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Target Humidity</div>
+                  <div style={{ fontWeight: 700 }}>{currentProfile.targetHumidity}</div>
                 </div>
               </div>
 
-              <div style={{ marginBottom: '0.85rem' }}>
-                <strong style={{ fontSize: '0.8rem', color: '#0f172a' }}>Regional Supply-Chain Bottleneck:</strong>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px', lineHeight: 1.5 }}>
+              <div style={{ marginBottom: '0.45rem' }}>
+                <strong style={{ textTransform: 'uppercase' }}>Local Supply Chain Challenge:</strong>
+                <p style={{ color: 'var(--text-secondary)', marginTop: '1px', lineHeight: 1.4 }}>
                   {currentProfile.localChallenge}
                 </p>
               </div>
 
               <div>
-                <strong style={{ fontSize: '0.8rem', color: '#0f172a' }}>Low-Cost Twin Implementation:</strong>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px', lineHeight: 1.5 }}>
+                <strong style={{ textTransform: 'uppercase' }}>Decentralized Digital Twin Spec:</strong>
+                <p style={{ color: 'var(--text-secondary)', marginTop: '1px', lineHeight: 1.4 }}>
                   {currentProfile.twinArchitecture}
                 </p>
               </div>
             </div>
 
-            {/* Impact Metric & FAO alignment */}
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', borderLeft: '1px solid var(--border-subtle)', paddingLeft: '1.5rem' }}>
-              <div style={{ padding: '1rem', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '4px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#166534', textTransform: 'uppercase' }}>
-                  Verified Postharvest Gain
+            {/* Impact Box */}
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', borderLeft: '1px solid var(--border-hairline)', paddingLeft: '1rem' }}>
+              <div style={{ padding: '0.75rem', backgroundColor: 'var(--scada-normal-bg)', border: '1px solid var(--scada-normal-border)', textAlign: 'center' }}>
+                <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--scada-normal)', textTransform: 'uppercase' }}>
+                  Verified Postharvest Retention
                 </div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#166534', margin: '4px 0' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--scada-normal)', margin: '2px 0' }}>
                   {currentProfile.shelfLifeGain}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#166534' }}>
-                  Versus unmonitored ambient storage
+                <div style={{ fontSize: '10px', color: 'var(--scada-normal)' }}>
+                  VERSUS UNMONITORED AMBIENT STORAGE
                 </div>
               </div>
 
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: '1rem' }}>
-                <strong>FAO AGRIS Benchmark:</strong> Adheres to Codex Alimentarius guidelines for the hygienic transport of bulk foods and semi-packed perishable foodstuffs (CAC/RCP 47-2001).
+              <div style={{ fontSize: '10px', color: 'var(--text-secondary)', lineHeight: 1.4, marginTop: '0.75rem' }}>
+                <strong>FAO CODEX BENCHMARK:</strong> Complies with CAC/RCP 47-2001 for hygienic transport and pre-cooling of bulk and perishable commodities.
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Standard Operating Procedures (SOPs) Grid */}
-      <div>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.85rem' }}>
-          Standard Operating Procedures (SOPs) for Rural Operators
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
-          <div className="panel" style={{ marginBottom: 0 }}>
-            <div className="panel-header">
-              <div className="panel-title">
-                <FileText size={15} color="#166534" />
-                SOP-01: Pre-Cooling & Intake Protocol
-              </div>
-            </div>
-            <div className="panel-body">
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '0.75rem' }}>
-                Harvest in early morning hours (&lt;8:00 AM). Remove field heat within 90 minutes of arrival. Never mix over-ripe climacteric batches with mature-green stock.
-              </p>
-              <span className="badge badge-safe">STANDARD COMPLIANCE</span>
+      {/* SOP Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.65rem' }}>
+        <div className="panel" style={{ marginBottom: 0 }}>
+          <div className="panel-header">
+            <div className="panel-title">
+              <FileText size={12} color="#15803d" />
+              SOP-01: Rapid Pre-Cooling Protocol
             </div>
           </div>
+          <div className="panel-body" style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.4, marginBottom: '0.5rem' }}>
+              Remove field heat within 90 minutes of morning harvest (&lt;8:00 AM). Never intermix climacteric ripe lots with green harvest stock.
+            </p>
+            <span className="badge badge-safe">STANDARD COMPLIANCE</span>
+          </div>
+        </div>
 
-          <div className="panel" style={{ marginBottom: 0 }}>
-            <div className="panel-header">
-              <div className="panel-title">
-                <FileText size={15} color="#d97706" />
-                SOP-02: Cold-Breach Emergency Response
-              </div>
-            </div>
-            <div className="panel-body">
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '0.75rem' }}>
-                If internal chamber exceeds 12.0°C for &gt;45 minutes, immediately halt incoming loads. Prioritize batches with shelf life &lt;2 days for urgent processing or direct liquidation.
-              </p>
-              <span className="badge badge-warning">EMERGENCY PROCEDURE</span>
+        <div className="panel" style={{ marginBottom: 0 }}>
+          <div className="panel-header">
+            <div className="panel-title">
+              <FileText size={12} color="#b45309" />
+              SOP-02: Cold-Breach Emergency Response
             </div>
           </div>
+          <div className="panel-body" style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.4, marginBottom: '0.5rem' }}>
+              If chamber exceeds 12.0°C for &gt;45 min, halt incoming consignments. Divert lots with residual life &lt;2 days to regional processing.
+            </p>
+            <span className="badge badge-warning">EMERGENCY PROCEDURE</span>
+          </div>
+        </div>
 
-          <div className="panel" style={{ marginBottom: 0 }}>
-            <div className="panel-header">
-              <div className="panel-title">
-                <FileText size={15} color="#0284c7" />
-                SOP-03: Solar Battery Maintenance
-              </div>
+        <div className="panel" style={{ marginBottom: 0 }}>
+          <div className="panel-header">
+            <div className="panel-title">
+              <FileText size={12} color="#0369a1" />
+              SOP-03: Solar Battery Preservation
             </div>
-            <div className="panel-body">
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '0.75rem' }}>
-                Clean photovoltaic panel glass weekly in dusty agricultural zones. Ensure minimum 20% state-of-charge buffer at sunset to guarantee night-time compressor cycling.
-              </p>
-              <span className="badge badge-safe">PREVENTIVE MAINTENANCE</span>
-            </div>
+          </div>
+          <div className="panel-body" style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.4, marginBottom: '0.5rem' }}>
+              Clean photovoltaic panel glass weekly in dusty agricultural corridors. Maintain minimum 20% state-of-charge reserve at twilight.
+            </p>
+            <span className="badge badge-safe">PREVENTIVE MAINTENANCE</span>
           </div>
         </div>
       </div>

@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import { useTwin } from '../context/TwinContext';
 import {
   GitCommit,
-  CheckCircle2,
-  AlertCircle,
   Truck,
   MapPin,
   Clock,
   Thermometer,
   ShieldCheck,
-  ChevronRight,
   Store,
   Warehouse,
   Boxes,
@@ -35,18 +32,18 @@ export const TraceabilityPage: React.FC = () => {
   const stages: TraceStage[] = [
     {
       id: 'harvest',
-      name: 'Field Harvesting & Sorting',
+      name: 'Field Harvesting & Primary Culling',
       location: 'Shillong Farmers Collective (Plot 4B), Meghalaya',
       timestamp: '2026-09-07 06:30 AM',
       status: 'completed',
       tempRecorded: '18.5°C (Ambient Dawn)',
-      notes: 'Hand-picked at mature-pink stage. Surface field dirt removed; zero chemical fungicides applied.',
+      notes: 'Hand-picked at mature-pink stage. Surface soil culled; zero chemical fungicides applied.',
       operator: 'D. Marak (Lead Agronomist)',
       icon: Sprout
     },
     {
       id: 'aggregation',
-      name: 'Packhouse Primary Aggregation',
+      name: 'Packhouse Primary Aggregation & Sorting',
       location: 'Jowai Rural Aggregation Center',
       timestamp: '2026-09-07 09:15 AM',
       status: 'completed',
@@ -57,7 +54,7 @@ export const TraceabilityPage: React.FC = () => {
     },
     {
       id: 'cold-vault',
-      name: 'Solar Cold Storage (Current Node)',
+      name: 'Solar Cold Storage Vault [Active Node]',
       location: 'FreshVault Storage Unit #4, Meghalaya',
       timestamp: '2026-09-07 11:30 AM - Present',
       status: 'active',
@@ -68,7 +65,7 @@ export const TraceabilityPage: React.FC = () => {
     },
     {
       id: 'transport',
-      name: 'Insulated Feeder Logistics',
+      name: 'Secondary Insulated Feeder Logistics',
       location: 'Route: Shillong → Guwahati Central Corridor',
       timestamp: 'Scheduled 2026-09-10 05:00 AM',
       status: 'upcoming',
@@ -79,7 +76,7 @@ export const TraceabilityPage: React.FC = () => {
     },
     {
       id: 'distribution',
-      name: 'Wholesale Distribution & Retail',
+      name: 'Terminal Wholesale Market & Cooperative Retail',
       location: 'Guwahati Agri-Fresh Terminal Market',
       timestamp: 'Scheduled 2026-09-10 11:00 AM',
       status: 'upcoming',
@@ -91,31 +88,31 @@ export const TraceabilityPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       {/* Page Title */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#0f172a' }}>
-            Farm-to-Consumer Traceability Journey
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)' }}>
+            Physical Chain-of-Custody & Traceability Journey
           </h2>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-            Immutable physical chain of custody with timestamped temperature telemetries across all handling stages
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            IMMUTABLE HANDOVER MILESTONES WITH CONTINUOUS TEMPERATURE TELEMETRY
           </p>
         </div>
 
         {/* Batch Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Track Batch:</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>TRACK LOT:</span>
           <select
             value={selectedBatchId}
             onChange={(e) => setSelectedBatchId(e.target.value)}
             style={{
-              padding: '0.45rem 0.85rem',
-              fontSize: '0.8125rem',
+              padding: '0.35rem 0.65rem',
+              fontSize: '11px',
               fontFamily: 'var(--font-mono)',
-              fontWeight: 600,
+              fontWeight: 700,
               border: '1px solid var(--border-strong)',
-              borderRadius: 'var(--radius-sm)',
+              borderRadius: 'var(--radius-sharp)',
               backgroundColor: '#fff'
             }}
           >
@@ -129,36 +126,46 @@ export const TraceabilityPage: React.FC = () => {
       </div>
 
       {/* Main Timeline Card */}
-      <div className="panel" style={{ borderRadius: 'var(--radius-md)' }}>
+      <div className="panel" style={{ marginBottom: 0 }}>
         <div className="panel-header">
           <div className="panel-title">
-            <GitCommit size={16} color="#0284c7" />
-            Active Supply-Chain Handover Milestones (Batch {selectedBatchId})
+            <GitCommit size={13} color="#0369a1" />
+            Supply-Chain Handover Log (Batch {selectedBatchId})
           </div>
           <span className="badge badge-safe">
-            <ShieldCheck size={12} /> FAO-SSC VERIFIED
+            <ShieldCheck size={11} /> FAO CODEX VERIFIED
           </span>
         </div>
 
-        <div className="panel-body" style={{ padding: '2rem 1.5rem' }}>
-          <div style={{ maxWidth: '850px', margin: '0 auto' }}>
+        <div className="panel-body" style={{ padding: '1.25rem 1rem' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             {stages.map((stg, idx) => {
               const Icon = stg.icon;
               return (
-                <div key={stg.id} className="timeline-step">
-                  <div className={`timeline-marker ${stg.status === 'completed' ? 'done' : stg.status === 'active' ? 'active' : ''}`} />
+                <div key={stg.id} className="timeline-step" style={{ paddingLeft: '24px', marginBottom: '1rem' }}>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 2,
+                      width: 12,
+                      height: 12,
+                      borderRadius: 2,
+                      backgroundColor: stg.status === 'completed' ? 'var(--scada-normal)' : stg.status === 'active' ? '#0369a1' : '#94a3b8'
+                    }}
+                  />
 
                   <div style={{
-                    padding: '1.1rem 1.25rem',
-                    backgroundColor: stg.status === 'active' ? '#f0f9ff' : '#fafbfc',
-                    border: `1px solid ${stg.status === 'active' ? '#bae6fd' : 'var(--border-subtle)'}`,
-                    borderRadius: 'var(--radius-sm)',
-                    marginBottom: '0.5rem'
+                    padding: '0.75rem 0.85rem',
+                    backgroundColor: stg.status === 'active' ? 'var(--chiller-bg)' : 'var(--bg-surface-subtle)',
+                    border: `1px solid ${stg.status === 'active' ? '#bae6fd' : 'var(--border-hairline)'}`,
+                    borderRadius: '2px',
+                    fontFamily: 'var(--font-mono)'
                   }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Icon size={16} color={stg.status === 'active' ? '#0284c7' : '#475569'} />
-                        <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <Icon size={14} color={stg.status === 'active' ? '#0369a1' : '#475569'} />
+                        <h4 style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>
                           {idx + 1}. {stg.name}
                         </h4>
                       </div>
@@ -167,25 +174,25 @@ export const TraceabilityPage: React.FC = () => {
                       </span>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.5rem', fontSize: '0.775rem', color: 'var(--text-secondary)', margin: '0.65rem 0' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <MapPin size={13} color="var(--text-muted)" />
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '4px', fontSize: '10px', color: 'var(--text-secondary)', margin: '0.4rem 0' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <MapPin size={11} color="var(--text-muted)" />
                         <span>{stg.location}</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <Clock size={13} color="var(--text-muted)" />
-                        <span className="font-mono">{stg.timestamp}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Clock size={11} color="var(--text-muted)" />
+                        <span>{stg.timestamp}</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <Thermometer size={13} color="#0284c7" />
-                        <span className="font-mono" style={{ fontWeight: 600 }}>{stg.tempRecorded}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Thermometer size={11} color="#0369a1" />
+                        <span style={{ fontWeight: 700 }}>{stg.tempRecorded}</span>
                       </div>
                       <div>
-                        <span>Inspector: <strong>{stg.operator}</strong></span>
+                        <span>OPERATOR: <strong>{stg.operator}</strong></span>
                       </div>
                     </div>
 
-                    <div style={{ fontSize: '0.8rem', color: '#475569', backgroundColor: '#ffffff', padding: '0.5rem 0.75rem', borderRadius: '3px', border: '1px solid var(--border-subtle)' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', backgroundColor: '#ffffff', padding: '0.4rem 0.5rem', border: '1px solid var(--border-hairline)', borderRadius: '2px' }}>
                       {stg.notes}
                     </div>
                   </div>

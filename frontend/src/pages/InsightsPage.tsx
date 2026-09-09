@@ -1,8 +1,6 @@
 import React from 'react';
 import { useTwin } from '../context/TwinContext';
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
   XAxis,
@@ -16,17 +14,13 @@ import {
 } from 'recharts';
 import {
   TrendingUp,
-  Activity,
   Sun,
-  Battery,
-  AlertTriangle,
   FileSpreadsheet
 } from 'lucide-react';
 
 export const InsightsPage: React.FC = () => {
   const { state } = useTwin();
 
-  // Energy balance telemetry dataset
   const energyData = [
     { time: '06:00', solarWatts: 20, compressorWatts: 0, batteryPct: 62 },
     { time: '08:00', solarWatts: 140, compressorWatts: 180, batteryPct: 60 },
@@ -37,7 +31,6 @@ export const InsightsPage: React.FC = () => {
     { time: '18:00', solarWatts: 35, compressorWatts: 190, batteryPct: 70 },
   ];
 
-  // Batch quality comparison data
   const batchComparisonData = state.batches.map((b) => ({
     id: b.id,
     qualityScore: b.qualityScore,
@@ -46,63 +39,63 @@ export const InsightsPage: React.FC = () => {
   }));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Title */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#0f172a' }}>
-            Quality, Shelf-Life & Thermodynamic Analytics
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)' }}>
+            Scientific Telemetry & Thermodynamic Analytics
           </h2>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-            Empirical postharvest biological decay kinetics and solar microgrid energy equilibrium
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            ARRHENIUS RESPIRATION ACCELERATION & SOLAR MICROGRID POWER EQUILIBRIUM
           </p>
         </div>
 
         <button className="btn btn-sm">
-          <FileSpreadsheet size={13} /> Export Telemetry (CSV)
+          <FileSpreadsheet size={11} /> Export Telemetry CSV
         </button>
       </div>
 
-      {/* Primary Analytics Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-        {/* Chart 1: Solar Power vs Compressor Draw */}
+      {/* Analytics Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+        {/* Chart 1: Energy balance */}
         <div className="panel" style={{ marginBottom: 0 }}>
           <div className="panel-header">
             <div className="panel-title">
-              <Sun size={15} color="#d97706" />
-              Solar Generation vs. Compressor Duty Draw (Watts)
+              <Sun size={13} color="#c2410c" />
+              Solar PV Influx vs. Compressor Load Draw (Watts)
             </div>
           </div>
-          <div className="panel-body">
-            <div style={{ height: '260px', width: '100%' }}>
+          <div className="panel-body" style={{ padding: '0.5rem' }}>
+            <div style={{ height: '220px', width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={energyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="time" stroke="#94a3b8" fontSize={11} />
-                  <YAxis stroke="#94a3b8" fontSize={11} />
+                  <CartesianGrid strokeDasharray="2 2" stroke="#e2e8f0" />
+                  <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} fontFamily="monospace" />
+                  <YAxis stroke="#94a3b8" fontSize={10} fontFamily="monospace" />
                   <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: '11px' }} />
+                  <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace' }} />
                   <Area
                     type="monotone"
                     dataKey="solarWatts"
                     name="Solar PV (W)"
-                    stroke="#d97706"
-                    fill="#fef3c7"
-                    strokeWidth={2}
+                    stroke="#c2410c"
+                    fill="#ffedd5"
+                    strokeWidth={1.5}
                   />
                   <Area
                     type="monotone"
                     dataKey="compressorWatts"
                     name="Chiller Draw (W)"
-                    stroke="#0284c7"
+                    stroke="#0369a1"
                     fill="#e0f2fe"
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-              Microgrid net equilibrium: Solar surplus charges battery buffer during peak daylight hours.
+            <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
+              MICROGRID EQUILIBRIUM: SOLAR SURPLUS POWERS ACTIVE CHILLING AND RECHARGES LiFePO4 BUFFER.
             </div>
           </div>
         </div>
@@ -111,58 +104,51 @@ export const InsightsPage: React.FC = () => {
         <div className="panel" style={{ marginBottom: 0 }}>
           <div className="panel-header">
             <div className="panel-title">
-              <TrendingUp size={15} color="#166534" />
-              Produce Freshness Index vs. Remaining Shelf Life
+              <TrendingUp size={13} color="#15803d" />
+              Produce Quality Score vs. Remaining Shelf Life
             </div>
           </div>
-          <div className="panel-body">
-            <div style={{ height: '260px', width: '100%' }}>
+          <div className="panel-body" style={{ padding: '0.5rem' }}>
+            <div style={{ height: '220px', width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={batchComparisonData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="id" stroke="#94a3b8" fontSize={11} />
-                  <YAxis stroke="#94a3b8" fontSize={11} />
+                  <CartesianGrid strokeDasharray="2 2" stroke="#e2e8f0" />
+                  <XAxis dataKey="id" stroke="#94a3b8" fontSize={10} fontFamily="monospace" />
+                  <YAxis stroke="#94a3b8" fontSize={10} fontFamily="monospace" />
                   <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: '11px' }} />
-                  <Bar dataKey="qualityScore" name="Quality Score (0-100)" fill="#166534" radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="shelfLifeDays" name="Shelf Life (Days)" fill="#0284c7" radius={[3, 3, 0, 0]} />
+                  <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace' }} />
+                  <Bar dataKey="qualityScore" name="Quality Score (0-100)" fill="#166534" radius={[1, 1, 0, 0]} />
+                  <Bar dataKey="shelfLifeDays" name="Shelf Life (Days)" fill="#0369a1" radius={[1, 1, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-              Batches scoring &lt; 45 require immediate triage to prevent complete loss before liquidation.
+            <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
+              FEFO TRIAGE THRESHOLD: BATCHES SCORING &lt;45 ENTER EMERGENCY LIQUIDATION PROTOCOL.
             </div>
           </div>
         </div>
       </div>
 
-      {/* Scientific Validation Note */}
-      <div className="panel">
+      {/* Kinetic formulation block */}
+      <div className="panel" style={{ marginBottom: 0 }}>
         <div className="panel-header">
           <div className="panel-title">
-            <Activity size={15} color="#0f172a" />
-            Biological Decay & Mathematical Kinetics Formulation
+            Mathematical Formulation: Arrhenius Biological Senescence Kinetics
           </div>
         </div>
-        <div className="panel-body">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            <div>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.45rem' }}>
-                Arrhenius Respiration Acceleration:
-              </h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                Fresh produce continues aerobic respiration after harvest. For tomatoes, the metabolic rate doubles for every 10°C temperature excursion ($Q_{10} \approx 2.4$). When cold-storage temperature rises from 6°C to 16°C, senescence speed jumps 240%, depleting soluble sugars and accelerating fungal mycelium germination.
-              </p>
-            </div>
+        <div className="panel-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+          <div>
+            <strong style={{ color: 'var(--text-primary)' }}>Metabolic Respiration Acceleration:</strong>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', lineHeight: 1.5 }}>
+              For climacteric tomatoes (Solanum lycopersicum), metabolic respiration doubles for every 10°C temperature excursion ($Q_{10} \approx 2.4$). When cold vault temperature exceeds 10°C, pectin esterase and polygalacturonase degrade pericarp cell walls, halving market shelf life within 36 hours.
+            </p>
+          </div>
 
-            <div>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.45rem' }}>
-                Operational Decision Boundary:
-              </h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                Rather than claiming sensors confirm chemical or microbiological pathogens, FreshVault Twin provides an early-warning risk triage engine. This gives cooperatives clear First-Expired, First-Out (FEFO) logistics priority.
-              </p>
-            </div>
+          <div style={{ borderLeft: '1px solid var(--border-hairline)', paddingLeft: '1.25rem' }}>
+            <strong style={{ color: 'var(--text-primary)' }}>Dynamic Early-Warning Decision Boundary:</strong>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', lineHeight: 1.5 }}>
+              FreshVault Twin does not claim IoT sensors confirm microscopic bacterial pathogens. Rather, it serves as an early-warning decision support system to prioritize sorting, rapid refrigeration, and First-Expired, First-Out (FEFO) logistics.
+            </p>
           </div>
         </div>
       </div>

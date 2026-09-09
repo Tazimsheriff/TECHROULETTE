@@ -5,231 +5,193 @@ import {
   Activity,
   Box,
   Sliders,
-  ShieldCheck,
-  Zap,
   Globe,
   ArrowRight,
-  TrendingDown,
-  CheckCircle2,
-  AlertOctagon,
-  Cpu
+  Cpu,
+  Zap,
+  ShieldCheck,
+  Warehouse
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
   const { state } = useTwin();
 
   return (
-    <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '1rem 0 3rem' }}>
-      {/* Hero Section */}
+    <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem', padding: '0.5rem 0 2rem' }}>
+      {/* Technical Briefing Header */}
       <section style={{
         backgroundColor: '#ffffff',
-        border: '1px solid var(--border-subtle)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '2.5rem 2rem',
-        marginBottom: '2rem',
-        boxShadow: 'var(--shadow-sm)'
+        border: '1px solid var(--border-hairline)',
+        borderTop: '3px solid var(--steel-slate)',
+        borderRadius: 'var(--radius-panel)',
+        padding: '1.5rem 1.5rem',
       }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0.75rem', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, color: '#166534', marginBottom: '1.25rem' }}>
-          <Globe size={14} />
-          FAO-SSC DIGITAL AGRICULTURE & FOOD SAFETY STANDARD
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '2px 8px', backgroundColor: 'var(--scada-normal-bg)', border: '1px solid var(--scada-normal-border)', borderRadius: '2px', fontSize: '10px', fontWeight: 700, color: 'var(--scada-normal)', fontFamily: 'var(--font-mono)', marginBottom: '0.75rem' }}>
+          <Globe size={12} />
+          UN-FAO SOUTH-SOUTH COOPERATION DIGITAL TWIN FRAMEWORK [SSTC-AGRI]
         </div>
 
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#0f172a', lineHeight: 1.15, maxWidth: '850px', marginBottom: '1rem' }}>
-          See the cold chain before it fails.
+        <h1 style={{ fontSize: '1.65rem', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text-primary)', lineHeight: 1.2, maxWidth: '850px', marginBottom: '0.5rem' }}>
+          FreshVault Twin: Decentralized Cold-Chain Digital Twin
         </h1>
 
-        <p style={{ fontSize: '1.125rem', color: '#475569', maxWidth: '780px', lineHeight: 1.6, marginBottom: '2rem' }}>
-          An IoT-enabled digital twin for food safety, biological quality prediction, and proactive cold-chain decision support. Engineered for solar-powered decentralized cold storage, protecting smallholder harvests across the Global South.
+        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', maxWidth: '780px', lineHeight: 1.5, marginBottom: '1.25rem', fontFamily: 'var(--font-mono)' }}>
+          Operational digital twin platform for solar-powered decentralized cold storage. Connects low-cost IoT sensor telemetry with Arrhenius postharvest respiration kinetics to predict quality loss and trigger proactive triage decisions before food spoilage occurs.
         </p>
 
-        {/* Live status badge from active facility */}
+        {/* Live Facility Status Line */}
         <div style={{
           display: 'flex',
           flexWrap: 'wrap',
           gap: '1.5rem',
-          padding: '1rem 1.25rem',
-          backgroundColor: '#f8fafc',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-sm)',
-          marginBottom: '2rem',
-          alignItems: 'center'
+          padding: '0.65rem 1rem',
+          backgroundColor: 'var(--bg-surface-subtle)',
+          border: '1px solid var(--border-hairline)',
+          borderRadius: 'var(--radius-sharp)',
+          marginBottom: '1.25rem',
+          alignItems: 'center',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '11px'
         }}>
           <div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Facility Node</div>
-            <div style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>{state.facilityId}</div>
+            <span style={{ color: 'var(--text-muted)' }}>NODE: </span>
+            <strong style={{ color: 'var(--text-primary)' }}>{state.facilityId}</strong>
           </div>
-          <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '1.5rem' }}>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Core Temp</div>
-            <div style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.9rem', color: state.temperature > 12 ? 'var(--status-critical)' : 'var(--status-safe)' }}>
-              {state.temperature} °C
-            </div>
+          <div>
+            <span style={{ color: 'var(--text-muted)' }}>CHAMBER TEMP: </span>
+            <strong style={{ color: state.temperature > 12 ? 'var(--scada-alarm)' : 'var(--scada-normal)' }}>
+              {state.temperature}°C
+            </strong>
           </div>
-          <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '1.5rem' }}>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>PV Power / Battery</div>
-            <div style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>
+          <div>
+            <span style={{ color: 'var(--text-muted)' }}>PV / BATTERY: </span>
+            <strong style={{ color: 'var(--text-primary)' }}>
               {state.solarPower} W / {state.batteryPercent}%
-            </div>
+            </strong>
           </div>
-          <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '1.5rem' }}>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Batches</div>
-            <div style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>
-              {state.batches.length} Lots (100% Monitored)
-            </div>
+          <div>
+            <span style={{ color: 'var(--text-muted)' }}>MONITORED LOTS: </span>
+            <strong>{state.batches.length} Crates (100% Telemetry)</strong>
           </div>
           <div style={{ marginLeft: 'auto' }}>
             <span className={`badge badge-${state.overallRisk}`}>
-              SYSTEM {state.overallRisk.toUpperCase()}
+              SYS: {state.overallRisk.toUpperCase()}
             </span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <Link to="/dashboard" className="btn btn-primary" style={{ padding: '0.65rem 1.25rem', fontSize: '0.9rem' }}>
-            <Activity size={16} />
-            Open Operations Dashboard
-            <ArrowRight size={14} />
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <Link to="/dashboard" className="btn btn-primary">
+            <Activity size={12} />
+            Launch Operations Console
+            <ArrowRight size={11} />
           </Link>
-          <Link to="/twin" className="btn" style={{ padding: '0.65rem 1.25rem', fontSize: '0.9rem' }}>
-            <Box size={16} />
-            Launch 3D Cold Twin
+          <Link to="/twin" className="btn">
+            <Box size={12} />
+            Inspect 3D Cold Twin
           </Link>
-          <Link to="/simulation" className="btn btn-warning" style={{ padding: '0.65rem 1.25rem', fontSize: '0.9rem' }}>
-            <Sliders size={16} />
-            Test Failure Scenarios
+          <Link to="/simulation" className="btn btn-warning">
+            <Sliders size={12} />
+            Fault Injection Bench
           </Link>
         </div>
       </section>
 
-      {/* 4 Core Pillars */}
-      <section style={{ marginBottom: '2.5rem' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#0f172a', marginBottom: '1rem' }}>
-          Engineered Digital-Twin Architecture
-        </h2>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
-          <div className="panel" style={{ marginBottom: 0 }}>
-            <div className="panel-header">
-              <div className="panel-title">
-                <Cpu size={16} color="#0284c7" />
-                1. Low-Cost IoT Node
-              </div>
-            </div>
-            <div className="panel-body">
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '0.75rem' }}>
-                ESP32 dual-core microcontrollers coupled with DS18B20/DHT22 temperature & humidity sensors, door reed switches, and INA219 solar-battery telemetry.
-              </p>
-              <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                Target BOM cost &lt; $35 USD per cold chamber.
-              </div>
+      {/* Engineering Pillars */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.65rem' }}>
+        <div className="panel" style={{ marginBottom: 0 }}>
+          <div className="panel-header">
+            <div className="panel-title">
+              <Cpu size={13} color="#0369a1" />
+              1. Edge IoT Instrumentation
             </div>
           </div>
-
-          <div className="panel" style={{ marginBottom: 0 }}>
-            <div className="panel-header">
-              <div className="panel-title">
-                <Box size={16} color="#166534" />
-                2. Live 3D Spatial Twin
-              </div>
-            </div>
-            <div className="panel-body">
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '0.75rem' }}>
-                React Three Fiber cutaway environment displaying dynamic color-shifting produce crates, animated compressor blower fans, opening insulated seal doors, and thermal breach overlays.
-              </p>
-              <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                Real-time raycast batch inspection.
-              </div>
-            </div>
-          </div>
-
-          <div className="panel" style={{ marginBottom: 0 }}>
-            <div className="panel-header">
-              <div className="panel-title">
-                <Zap size={16} color="#d97706" />
-                3. Respiration Kinetics Engine
-              </div>
-            </div>
-            <div className="panel-body">
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '0.75rem' }}>
-                Arrhenius-based postharvest respiration kinetics calculate quality degradation and remaining shelf life based on temperature excursion duration rather than static calendar dates.
-              </p>
-              <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                FEFO (First-Expired, First-Out) optimization.
-              </div>
-            </div>
-          </div>
-
-          <div className="panel" style={{ marginBottom: 0 }}>
-            <div className="panel-header">
-              <div className="panel-title">
-                <ShieldCheck size={16} color="#7c3aed" />
-                4. QR Product Passport
-              </div>
-            </div>
-            <div className="panel-body">
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '0.75rem' }}>
-                Scannable digital identity for each tomato crate containing full chain-of-custody, temperature logs, compliance stamps, and action advisories for buyers, cooperatives, and food inspectors.
-              </p>
-              <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                FAO-compliant digital traceability.
-              </div>
+          <div className="panel-body" style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '0.5rem' }}>
+              Dual-core ESP32 microcontrollers with DS18B20 1-wire digital temperature probes, DHT22 humidity sensors, and magnetic reed switches logging chamber integrity.
+            </p>
+            <div style={{ color: 'var(--text-muted)' }}>
+              Target hardware BOM &lt; $35 USD per unit.
             </div>
           </div>
         </div>
-      </section>
 
-      {/* The Problem & South-South Solution */}
-      <section style={{
-        backgroundColor: '#ffffff',
-        border: '1px solid var(--border-subtle)',
-        borderRadius: 'var(--radius-md)',
-        padding: '2rem',
-        boxShadow: 'var(--shadow-sm)'
-      }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+        <div className="panel" style={{ marginBottom: 0 }}>
+          <div className="panel-header">
+            <div className="panel-title">
+              <Warehouse size={13} color="#15803d" />
+              2. 3D Spatial Digital Twin
+            </div>
+          </div>
+          <div className="panel-body" style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '0.5rem' }}>
+              Real-time React Three Fiber cutaway vault displaying dynamic color-coded batch lots, rotating refrigeration blowers, hinging seal doors, and solar generation arrays.
+            </p>
+            <div style={{ color: 'var(--text-muted)' }}>
+              Interactive raycasting crate inspection.
+            </div>
+          </div>
+        </div>
+
+        <div className="panel" style={{ marginBottom: 0 }}>
+          <div className="panel-header">
+            <div className="panel-title">
+              <Zap size={13} color="#c2410c" />
+              3. Respiration Kinetics Model
+            </div>
+          </div>
+          <div className="panel-body" style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '0.5rem' }}>
+              Arrhenius biological respiration kinetics (Q10 = 2.4) evaluating cumulative temperature excursion duration rather than arbitrary calendar expiry dates.
+            </p>
+            <div style={{ color: 'var(--text-muted)' }}>
+              First-Expired, First-Out (FEFO) triage.
+            </div>
+          </div>
+        </div>
+
+        <div className="panel" style={{ marginBottom: 0 }}>
+          <div className="panel-header">
+            <div className="panel-title">
+              <ShieldCheck size={13} color="#0f172a" />
+              4. QR Product Passport
+            </div>
+          </div>
+          <div className="panel-body" style={{ fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '0.5rem' }}>
+              Field-scannable digital product passports displaying harvest origin, continuous temperature logs, residual shelf life, and FAO Codex compliance seals.
+            </p>
+            <div style={{ color: 'var(--text-muted)' }}>
+              Compatible with standard smartphones.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* South-South Context Box */}
+      <section className="panel" style={{ marginBottom: 0 }}>
+        <div className="panel-header">
+          <div className="panel-title">
+            South-South Agro-Corridor Problem & Solution Mapping
+          </div>
+        </div>
+        <div className="panel-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#b91c1c', marginBottom: '0.5rem' }}>
-              <AlertOctagon size={16} />
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>The Cold-Chain Blindspot</span>
-            </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.75rem' }}>
-              Why fixed expiration dates fail smallholders
-            </h3>
-            <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.6, marginBottom: '1rem' }}>
-              Over 35% of harvested horticultural produce in developing regions is lost before reaching consumers due to unrecorded cold-chain ruptures, solar battery drops, or doors left ajar. Traditional manual logs detect spoilage only when physical rot is already irreversible.
+            <strong style={{ color: 'var(--scada-alarm)', textTransform: 'uppercase' }}>
+              The Cold-Chain Deficit in Developing Regions:
+            </strong>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', lineHeight: 1.5 }}>
+              Over 35% of harvested horticultural produce is lost postharvest due to unmonitored temperature ruptures, rural grid outages, and doors left unsealed. Reactive inspections catch damage only when rotting is already irreversible.
             </p>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: '#64748b' }}>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <TrendingDown size={14} color="#dc2626" />
-                Reactive testing: issues discovered only at consumer terminal
-              </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <TrendingDown size={14} color="#dc2626" />
-                Unfair price deductions imposed on small farmers by middlemen
-              </li>
-            </ul>
           </div>
 
-          <div style={{ borderLeft: '1px solid var(--border-subtle)', paddingLeft: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#166534', marginBottom: '0.5rem' }}>
-              <CheckCircle2 size={16} />
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>The FreshVault Remedy</span>
-            </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.75rem' }}>
-              Proactive early warning & actionable triage
-            </h3>
-            <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.6, marginBottom: '1rem' }}>
-              FreshVault Twin transforms blind storage into an intelligent operational control room. If a solar panel is shaded or cooling trips, the system immediately predicts the exact remaining shelf life for every crate and tells operators which lot to sell first.
+          <div style={{ borderLeft: '1px solid var(--border-hairline)', paddingLeft: '1.5rem' }}>
+            <strong style={{ color: 'var(--scada-normal)', textTransform: 'uppercase' }}>
+              The FreshVault Twin Decision Support:
+            </strong>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', lineHeight: 1.5 }}>
+              By modeling the thermodynamic state of each crate in real time, cooperatives receive immediate early warnings and know exactly which lots to fast-track to market, preventing catastrophic economic loss for smallholder farmers.
             </p>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: '#166534' }}>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <CheckCircle2 size={14} />
-                Dynamic shelf life computed from continuous physics & biological model
-              </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <CheckCircle2 size={14} />
-                Reusable blueprints for India, Kenya, Indonesia, and Bangladesh
-              </li>
-            </ul>
           </div>
         </div>
       </section>

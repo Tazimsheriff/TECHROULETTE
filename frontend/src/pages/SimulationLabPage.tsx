@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useTwin } from '../context/TwinContext';
 import { SimulationAction } from '../types';
 import {
-  Sliders,
-  Play,
   RotateCcw,
   Zap,
   DoorOpen,
@@ -11,7 +9,7 @@ import {
   BatteryLow,
   Flame,
   Truck,
-  ArrowRight,
+  Play,
   Clock,
   Activity,
   AlertTriangle,
@@ -29,124 +27,121 @@ export const SimulationLabPage: React.FC = () => {
   const handleTick = async (minutes: number) => {
     setAccelerating(true);
     await tickSimulation(minutes);
-    setTimeout(() => setAccelerating(false), 300);
+    setTimeout(() => setAccelerating(false), 250);
   };
 
   const scenarios = [
     {
       action: 'cooling-failure' as SimulationAction,
-      title: 'Compressor Thermal Trip',
-      desc: 'Simulates complete electrical fault in refrigeration compressor. Temperature climbs rapidly past 11°C.',
+      title: 'FAULT-01: Evaporator Compressor Trip',
+      desc: 'Simulates mechanical seizure or thermal circuit overload. Cooling halts; internal temperature climbs at ~0.15°C/min.',
       icon: Zap,
-      variant: 'btn-danger',
-      severity: 'Critical'
+      btnClass: 'btn-danger',
+      code: 'ERR_COMP_TRIP'
     },
     {
       action: 'door-open' as SimulationAction,
-      title: state.doorOpen ? 'Seal Chamber Door' : 'Door Left Ajar (30 min)',
-      desc: 'Simulates an unsealed vault door. Ambient atmospheric air infiltrates, causing condensation and heat spike.',
+      title: state.doorOpen ? 'DOOR-02: Seal Chamber Access Door' : 'DOOR-02: Cold-Vault Door Left Ajar (30 min)',
+      desc: 'Simulates unsealed rubber compression seal. High ambient humidity infiltrates, forming condensation on produce skins.',
       icon: DoorOpen,
-      variant: 'btn-warning',
-      severity: 'Warning'
+      btnClass: 'btn-warning',
+      code: 'WARN_SEAL_BREACH'
     },
     {
       action: 'solar-failure' as SimulationAction,
-      title: 'Monsoon Solar Shading',
-      desc: 'Solar generation collapses to 45 W under dense cloud cover. Battery begins rapid discharge.',
+      title: 'SOLAR-03: Monsoon Cloud Cover Shading',
+      desc: 'Simulates diffuse solar irradiance collapse to 28 W. Battery drops to 18.5% and BMS throttles compressor duty.',
       icon: Sun,
-      variant: 'btn-warning',
-      severity: 'Advisory'
+      btnClass: 'btn-warning',
+      code: 'WARN_PV_IRRAD_DROP'
     },
     {
       action: 'battery-low' as SimulationAction,
-      title: 'Battery Deep Discharge (<15%)',
-      desc: 'Lithium battery drops below safety threshold; automated BMS cuts chiller power to prevent cell damage.',
+      title: 'BATT-04: Deep Battery Depletion (<15%)',
+      desc: 'Simulates extended night/cloud storage exhaustion. Automated battery protection trips cooling loop completely.',
       icon: BatteryLow,
-      variant: 'btn-danger',
-      severity: 'Critical'
+      btnClass: 'btn-danger',
+      code: 'CRIT_BATT_SHED'
     },
     {
       action: 'ambient-heat-spike' as SimulationAction,
-      title: 'Exterior Heatwave (38.5°C)',
-      desc: 'Extreme outside thermal shock tests the thermal insulation barrier and compressor capacity limit.',
+      title: 'CLIM-05: Exterior Thermal Wave (38.5°C)',
+      desc: 'Simulates severe summer heatwave creating maximum temperature gradient (ΔT = 32°C) across insulated chamber walls.',
       icon: Flame,
-      variant: 'btn-warning',
-      severity: 'Warning'
+      btnClass: 'btn-warning',
+      code: 'WARN_HEAT_LOAD'
     },
     {
       action: 'transport-delay' as SimulationAction,
-      title: '6-Hour Feeder Transit Delay',
-      desc: 'Simulates secondary logistics roadblock during uncooled road transit from village hub to cold terminal.',
+      title: 'LOG-06: Feeder Logistics Transit Delay (6h)',
+      desc: 'Simulates roadblock during ambient road transit from farm collection to central cold hub without active chilling.',
       icon: Truck,
-      variant: 'btn-danger',
-      severity: 'High Loss'
+      btnClass: 'btn-danger',
+      code: 'HIGH_TRANSIT_LOSS'
     }
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Title */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      {/* Title Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#0f172a' }}>
-            Cold-Chain Simulation Laboratory
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)' }}>
+            Simulation Test Bench // Fault Injection Engine
           </h2>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-            Stress-test perishable tomato inventory under accelerated thermodynamic & biological failure conditions
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            DETERMINISTIC STRESS-TESTING OF PERISHABLE PRODUCE UNDER ACCELERATED EXCURSIONS
           </p>
         </div>
 
         <button
-          className="btn"
+          className="btn btn-sm"
           onClick={() => handleScenario('reset')}
-          style={{ padding: '0.5rem 1rem' }}
         >
-          <RotateCcw size={14} />
-          Reset Facility to Nominal State
+          <RotateCcw size={11} />
+          Reset Facility to Nominal Baseline
         </button>
       </div>
 
-      {/* Active Simulation State Tracker Banner */}
+      {/* Active State Tracker */}
       <div className={`recommendation-box ${state.overallRisk}`}>
         <div style={{ marginTop: '2px' }}>
           {state.overallRisk === 'critical' ? (
-            <AlertTriangle size={20} color="var(--status-critical)" />
+            <AlertTriangle size={16} color="var(--scada-alarm)" />
           ) : (
-            <CheckCircle2 size={20} color="var(--status-safe)" />
+            <CheckCircle2 size={16} color="var(--scada-normal)" />
           )}
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Active Environment State:
-            </span>
+        <div style={{ flex: 1, fontSize: '11px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '2px' }}>
+            <span style={{ fontWeight: 700 }}>ACTIVE STATE:</span>
             <span className={`badge badge-${state.overallRisk}`}>
               {state.activeSimulation || 'NOMINAL BASELINE'}
             </span>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginLeft: 'auto' }}>
-              SIM CLOCK: {Math.floor(state.simulatedHour)}:00 HRS
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginLeft: 'auto' }}>
+              SIMULATED CLOCK: {Math.floor(state.simulatedHour)}:00 HRS
             </span>
           </div>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-            {state.activeAlert || 'Facility is currently running under optimal parameters. Select a stress scenario below to observe how the digital twin responds.'}
+          <p style={{ color: 'var(--text-secondary)' }}>
+            {state.activeAlert || 'Facility is operating under baseline conditions (4.0 - 8.0°C). Select a test scenario below to observe how the digital twin and biological kinetics react.'}
           </p>
         </div>
       </div>
 
-      {/* Time Acceleration Control Bar */}
+      {/* Time Acceleration Strip */}
       <div className="panel" style={{ marginBottom: 0 }}>
         <div className="panel-header">
           <div className="panel-title">
-            <Clock size={15} color="#0284c7" />
-            Time Acceleration Engine (Advance Biological Respiration Clock)
+            <Clock size={13} color="#0369a1" />
+            Biological Respiration Chrono-Step (Accelerate Senescence Time)
           </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Dynamic Q10 kinetic progression
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            Q10 Respiration Kinetic Step
           </span>
         </div>
-        <div className="panel-body" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-            Simulate Elapsed Time:
+        <div className="panel-body" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', padding: '0.5rem 0.75rem' }}>
+          <span style={{ fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+            CHRONO-ADVANCE:
           </span>
           <button
             className="btn btn-sm"
@@ -174,99 +169,92 @@ export const SimulationLabPage: React.FC = () => {
             onClick={() => handleTick(720)}
             disabled={accelerating}
           >
-            +12 Hours (Half Day Decay)
+            +12 Hours (Half Day Respiration)
           </button>
-          <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            Calculates Arrhenius respiration rate & mould probability
+          <span style={{ marginLeft: 'auto', fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            EVALUATES TEMPERATURE EXCURSION DURATION ON TOMATO FIRMNESS
           </span>
         </div>
       </div>
 
-      {/* Scenario Cards Grid */}
-      <div>
-        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.75rem' }}>
-          Available Cold-Chain Fault Scenarios
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
-          {scenarios.map((sc) => {
-            const Icon = sc.icon;
-            return (
-              <div key={sc.action} className="panel" style={{ marginBottom: 0, display: 'flex', flexDirection: 'column' }}>
-                <div className="panel-header">
-                  <div className="panel-title">
-                    <Icon size={16} />
-                    {sc.title}
-                  </div>
-                  <span className={`badge ${sc.severity === 'Critical' || sc.severity === 'High Loss' ? 'badge-critical' : 'badge-warning'}`}>
-                    {sc.severity}
-                  </span>
+      {/* Fault Injection Bench Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '0.65rem' }}>
+        {scenarios.map((sc) => {
+          const Icon = sc.icon;
+          return (
+            <div key={sc.action} className="panel" style={{ marginBottom: 0, display: 'flex', flexDirection: 'column' }}>
+              <div className="panel-header">
+                <div className="panel-title">
+                  <Icon size={13} />
+                  {sc.title}
                 </div>
-                <div className="panel-body" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '1rem' }}>
-                    {sc.desc}
-                  </p>
-                  <button
-                    className={`btn ${sc.variant}`}
-                    style={{ width: '100%', padding: '0.5rem' }}
-                    onClick={() => handleScenario(sc.action)}
-                  >
-                    <Play size={13} />
-                    Trigger Scenario
-                  </button>
-                </div>
+                <span style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                  [{sc.code}]
+                </span>
               </div>
-            );
-          })}
-        </div>
+              <div className="panel-body" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '0.65rem' }}>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: 1.4, marginBottom: '0.65rem' }}>
+                  {sc.desc}
+                </p>
+                <button
+                  className={`btn ${sc.btnClass}`}
+                  style={{ width: '100%', padding: '0.45rem', fontSize: '11px' }}
+                  onClick={() => handleScenario(sc.action)}
+                >
+                  <Play size={11} />
+                  Inject Fault Scenario
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Chain Reaction Breakdown Diagram */}
-      <div className="panel" style={{ marginTop: '0.5rem' }}>
+      {/* Deterministic Cause & Effect Propagation Ledger */}
+      <div className="panel" style={{ marginTop: '0.25rem' }}>
         <div className="panel-header">
           <div className="panel-title">
-            <Activity size={15} color="#166534" />
-            Digital-Twin Cause & Effect Chain Reaction
+            <Activity size={13} color="#15803d" />
+            Digital Twin Telemetry Propagation Flow
           </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Multi-stage deterministic telemetry propagation
-          </span>
         </div>
-        <div className="panel-body">
+        <div className="panel-body" style={{ padding: '0.75rem' }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-            gap: '0.75rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gap: '0.5rem',
             alignItems: 'center',
             textAlign: 'center',
-            fontSize: '0.75rem'
+            fontSize: '11px',
+            fontFamily: 'var(--font-mono)'
           }}>
-            <div style={{ padding: '0.75rem 0.5rem', backgroundColor: '#f8fafc', border: '1px solid var(--border-subtle)', borderRadius: '4px' }}>
-              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>1. Physical Event</div>
-              <div style={{ color: 'var(--text-muted)' }}>Compressor trip / door open / solar clouding</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-subtle)', border: '1px solid var(--border-hairline)', borderRadius: '2px' }}>
+              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>1. Physical Event</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>Compressor trip / door breach / solar shading</div>
             </div>
-            <div style={{ fontWeight: 700, color: 'var(--text-muted)' }}>→</div>
+            <div style={{ fontWeight: 700, color: 'var(--text-muted)' }}>&rarr;</div>
 
-            <div style={{ padding: '0.75rem 0.5rem', backgroundColor: '#f8fafc', border: '1px solid var(--border-subtle)', borderRadius: '4px' }}>
-              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>2. IoT Telemetry</div>
-              <div style={{ color: 'var(--text-muted)' }}>Temp rises &gt;8°C, fan RPM drops to 0</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-subtle)', border: '1px solid var(--border-hairline)', borderRadius: '2px' }}>
+              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>2. IoT Sensing</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>DS18B20 & DHT22 log temperature rise</div>
             </div>
-            <div style={{ fontWeight: 700, color: 'var(--text-muted)' }}>→</div>
+            <div style={{ fontWeight: 700, color: 'var(--text-muted)' }}>&rarr;</div>
 
-            <div style={{ padding: '0.75rem 0.5rem', backgroundColor: '#f8fafc', border: '1px solid var(--border-subtle)', borderRadius: '4px' }}>
-              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>3. Respiration Kinetics</div>
-              <div style={{ color: 'var(--text-muted)' }}>Arrhenius Q10 accelerates decay rate</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-subtle)', border: '1px solid var(--border-hairline)', borderRadius: '2px' }}>
+              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>3. Kinetic Model</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>Arrhenius Q10 accelerates decay rate</div>
             </div>
-            <div style={{ fontWeight: 700, color: 'var(--text-muted)' }}>→</div>
+            <div style={{ fontWeight: 700, color: 'var(--text-muted)' }}>&rarr;</div>
 
-            <div style={{ padding: '0.75rem 0.5rem', backgroundColor: '#f8fafc', border: '1px solid var(--border-subtle)', borderRadius: '4px' }}>
-              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>4. 3D Twin & Crates</div>
-              <div style={{ color: 'var(--text-muted)' }}>Crates shift green → yellow → red in 3D</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-subtle)', border: '1px solid var(--border-hairline)', borderRadius: '2px' }}>
+              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>4. 3D Twin Response</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>Fan stops, crates shift color in WebGL</div>
             </div>
-            <div style={{ fontWeight: 700, color: 'var(--text-muted)' }}>→</div>
+            <div style={{ fontWeight: 700, color: 'var(--text-muted)' }}>&rarr;</div>
 
-            <div style={{ padding: '0.75rem 0.5rem', backgroundColor: '#f8fafc', border: '1px solid var(--border-subtle)', borderRadius: '4px' }}>
-              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>5. FEFO Decision</div>
-              <div style={{ color: 'var(--text-muted)' }}>Prioritize dispatch of affected lots</div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-subtle)', border: '1px solid var(--border-hairline)', borderRadius: '2px' }}>
+              <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>5. FEFO Decision</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>Dispatch high-risk lots to prevent loss</div>
             </div>
           </div>
         </div>

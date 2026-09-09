@@ -2,16 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTwin } from '../context/TwinContext';
 import {
-  Layers,
   Search,
-  Filter,
-  FileText,
-  CheckCircle,
-  AlertTriangle,
-  ArrowUpDown,
-  MapPin,
-  Calendar,
-  Weight
+  FileText
 } from 'lucide-react';
 
 export const BatchesPage: React.FC = () => {
@@ -29,34 +21,34 @@ export const BatchesPage: React.FC = () => {
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       {/* Title & Filter Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#0f172a' }}>
-            Batch Inventory & Triage Management
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)' }}>
+            Batch Inventory Ledger // First-Expired, First-Out (FEFO)
           </h2>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-            Individual lot tracking, quality deterioration curves, and QR digital product passports
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            BIOLOGICAL RESIDUAL SHELF-LIFE AUDIT & COMPLIANCE CERTIFICATION
           </p>
         </div>
 
-        {/* Filter Badges & Search */}
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        {/* Filter Controls */}
+        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ position: 'relative' }}>
-            <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <Search size={12} style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input
               type="text"
-              placeholder="Search ID, variety, coop..."
+              placeholder="Search lot, variety, coop..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
-                padding: '0.45rem 0.85rem 0.45rem 2rem',
-                fontSize: '0.8125rem',
+                padding: '0.35rem 0.65rem 0.35rem 1.65rem',
+                fontSize: '11px',
                 border: '1px solid var(--border-strong)',
-                borderRadius: 'var(--radius-sm)',
-                fontFamily: 'inherit',
-                width: '210px'
+                borderRadius: 'var(--radius-sharp)',
+                fontFamily: 'var(--font-mono)',
+                width: '220px'
               }}
             />
           </div>
@@ -88,98 +80,87 @@ export const BatchesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Batches Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.25rem' }}>
-        {filteredBatches.map((batch) => (
-          <div key={batch.id} className="panel" style={{ marginBottom: 0, display: 'flex', flexDirection: 'column' }}>
-            <div className="panel-header">
-              <div>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>LOT IDENTIFIER</span>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{batch.id}</div>
-              </div>
-              <span className={`badge badge-${batch.risk}`}>
-                {batch.risk}
-              </span>
-            </div>
-
-            <div className="panel-body" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ marginBottom: '0.85rem' }}>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#0f172a' }}>{batch.variety}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{batch.product}</div>
-                </div>
-
-                {/* Score Progress */}
-                <div style={{ marginBottom: '0.85rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, marginBottom: '2px' }}>
-                    <span>Freshness Index</span>
-                    <span className="font-mono">{batch.qualityScore} / 100</span>
-                  </div>
-                  <div className="meter-container">
-                    <div className={`meter-fill ${batch.risk}`} style={{ width: `${batch.qualityScore}%` }} />
-                  </div>
-                </div>
-
-                <div className="inspector-field">
-                  <span className="label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Calendar size={12} /> Shelf Life Left:
-                  </span>
-                  <span className="val" style={{ color: batch.shelfLifeDays < 2 ? 'var(--status-critical)' : 'inherit' }}>
-                    {batch.shelfLifeDays} Days
-                  </span>
-                </div>
-
-                <div className="inspector-field">
-                  <span className="label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Weight size={12} /> Monitored Quantity:
-                  </span>
-                  <span className="val font-mono">{batch.quantityKg} kg</span>
-                </div>
-
-                <div className="inspector-field">
-                  <span className="label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <MapPin size={12} /> Producer Origin:
-                  </span>
-                  <span className="val" style={{ fontSize: '0.75rem' }}>{batch.originLocation}</span>
-                </div>
-
-                <div style={{ padding: '0.65rem', backgroundColor: '#f8fafc', border: '1px solid var(--border-subtle)', borderRadius: '4px', margin: '0.75rem 0', fontSize: '0.75rem' }}>
-                  <strong>Operational Protocol:</strong> {batch.recommendedAction}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
-                <Link
-                  to={`/batch/${batch.id}`}
-                  className="btn btn-primary"
-                  style={{ flex: 1, padding: '0.45rem', fontSize: '0.8rem' }}
-                  onClick={() => setSelectedBatchId(batch.id)}
-                >
-                  <FileText size={13} />
-                  Product Passport (QR)
-                </Link>
-                {batch.risk === 'critical' ? (
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => inspectBatch(batch.id, 'quarantine')}
-                    title="Quarantine batch"
-                  >
-                    Quarantine
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-sm"
-                    onClick={() => inspectBatch(batch.id, 'certify')}
-                    title="Certify batch quality"
-                  >
-                    Certify
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+      {/* Main Tabular Dispatch Ledger */}
+      <div className="panel" style={{ marginBottom: 0 }}>
+        <div className="table-container">
+          <table className="tech-table">
+            <thead>
+              <tr>
+                <th>Lot ID</th>
+                <th>Botanical Variety</th>
+                <th>Cooperative Entity</th>
+                <th>Harvest Date</th>
+                <th>Monitored Mass</th>
+                <th>Chamber Coords</th>
+                <th>Quality Retention</th>
+                <th>Remaining Life</th>
+                <th>Risk State</th>
+                <th>Compliance Status</th>
+                <th>Inspector Audit</th>
+                <th>Passport</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredBatches.map((batch) => (
+                <tr key={batch.id}>
+                  <td style={{ fontWeight: 700 }}>{batch.id}</td>
+                  <td>{batch.variety}</td>
+                  <td>{batch.producerCoop}</td>
+                  <td>{batch.harvestDate}</td>
+                  <td>{batch.quantityKg} kg</td>
+                  <td>[{batch.cratePosition.join(', ')}]</td>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '28px' }}>{batch.qualityScore}%</span>
+                      <div className="meter-container" style={{ width: '60px', marginTop: 0 }}>
+                        <div
+                          className={`meter-fill ${batch.risk}`}
+                          style={{ width: `${batch.qualityScore}%` }}
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td style={{ fontWeight: 700, color: batch.shelfLifeDays < 2 ? 'var(--scada-alarm)' : 'inherit' }}>
+                    {batch.shelfLifeDays} days
+                  </td>
+                  <td>
+                    <span className={`badge badge-${batch.risk}`}>
+                      {batch.risk}
+                    </span>
+                  </td>
+                  <td>{batch.inspectionStatus}</td>
+                  <td>
+                    {batch.risk === 'critical' ? (
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => inspectBatch(batch.id, 'quarantine')}
+                      >
+                        Quarantine
+                      </button>
+                    ) : (
+                      <button
+                        className="btn btn-sm"
+                        onClick={() => inspectBatch(batch.id, 'certify')}
+                      >
+                        Certify
+                      </button>
+                    )}
+                  </td>
+                  <td>
+                    <Link
+                      to={`/batch/${batch.id}`}
+                      className="btn btn-sm btn-primary"
+                      onClick={() => setSelectedBatchId(batch.id)}
+                    >
+                      <FileText size={10} />
+                      Passport
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

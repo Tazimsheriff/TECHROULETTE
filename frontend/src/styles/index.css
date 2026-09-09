@@ -1,55 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Industrial Control Room Light Palette */
-  --bg-app: #f4f6f9;
+  /* Engineering Laboratory Light Surface System */
+  --bg-app: #f1f3f6;
   --bg-surface: #ffffff;
-  --bg-surface-elevated: #fafbfd;
-  --bg-surface-subtle: #edf2f7;
-  --bg-control: #e2e8f0;
+  --bg-surface-subtle: #f8f9fb;
+  --bg-surface-header: #f3f5f8;
+  --bg-control: #e5e9f0;
 
-  /* Technical Borders & Dividers */
-  --border-subtle: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --border-focus: #475569;
+  /* Technical Hairline Borders */
+  --border-hairline: #d8dde6;
+  --border-strong: #b4bcc8;
+  --border-dark: #0f172a;
 
-  /* Typography Colors */
+  /* Typographic Contrast */
   --text-primary: #0f172a;
-  --text-secondary: #475569;
+  --text-secondary: #334155;
   --text-muted: #64748b;
-  --text-inverse: #ffffff;
+  --text-dim: #94a3b8;
 
-  /* Operational Status Colors */
-  --status-safe: #166534;
-  --status-safe-bg: #f0fdf4;
-  --status-safe-border: #bbf7d0;
+  /* Calibrated Industrial Process States */
+  --scada-normal: #15803d;
+  --scada-normal-bg: #f0fdf4;
+  --scada-normal-border: #86efac;
 
-  --status-warning: #b45309;
-  --status-warning-bg: #fffbeb;
-  --status-warning-border: #fde68a;
+  --scada-warning: #b45309;
+  --scada-warning-bg: #fffbeb;
+  --scada-warning-border: #fde68a;
 
-  --status-critical: #b91c1c;
-  --status-critical-bg: #fef2f2;
-  --status-critical-border: #fecaca;
+  --scada-alarm: #b91c1c;
+  --scada-alarm-bg: #fef2f2;
+  --scada-alarm-border: #fca5a5;
 
-  /* Machinery / Hardware Accents */
-  --chiller-blue: #0284c7;
+  /* Machinery & Hardware */
+  --chiller-blue: #0369a1;
   --chiller-bg: #f0f9ff;
-  --solar-amber: #d97706;
-  --solar-bg: #fffbeb;
-  --steel-slate: #334155;
+  --solar-amber: #c2410c;
+  --solar-bg: #fff7ed;
+  --steel-slate: #1e293b;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
-
-  --radius-sm: 3px;
-  --radius-md: 5px;
-  --radius-lg: 8px;
+  /* Engineering Radius & Shadows */
+  --radius-sharp: 2px;
+  --radius-panel: 3px;
 }
 
 * {
@@ -62,17 +57,18 @@ body {
   font-family: var(--font-sans);
   background-color: var(--bg-app);
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.4;
   -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
+  font-size: 13px;
 }
 
-/* Monospace Utilities */
+/* Monospace Engine */
 .font-mono {
   font-family: var(--font-mono);
+  letter-spacing: -0.02em;
 }
 
-/* Layout Utilities */
+/* Application Wrapper */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -81,349 +77,334 @@ body {
 
 .main-content {
   flex: 1;
-  padding: 1.25rem 1.5rem 2.5rem;
-  max-width: 1440px;
+  padding: 0.75rem 1rem 2rem;
+  max-width: 1560px;
   margin: 0 auto;
   width: 100%;
 }
 
-/* Header & Top Navigation */
+/* Control Room Header */
 .control-header {
   background-color: var(--bg-surface);
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 2px solid var(--steel-slate);
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: var(--shadow-sm);
 }
 
 .header-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.65rem 1.5rem;
-  border-bottom: 1px solid var(--border-subtle);
-  font-size: 0.8125rem;
-  background-color: #fafbfc;
+  padding: 0.35rem 1rem;
+  border-bottom: 1px solid var(--border-hairline);
+  font-size: 11px;
+  background-color: var(--bg-surface-header);
+  font-family: var(--font-mono);
 }
 
 .header-main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.85rem 1.5rem;
+  padding: 0.5rem 1rem;
 }
 
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
-.brand-logo-mark {
-  width: 34px;
-  height: 34px;
-  background-color: #1e293b;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
+.brand-badge {
+  font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 1.1rem;
-  letter-spacing: -0.02em;
-  border: 1px solid #334155;
+  font-size: 12px;
+  background-color: var(--steel-slate);
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: var(--radius-sharp);
+  letter-spacing: 0.04em;
 }
 
 .brand-titles h1 {
-  font-size: 1.125rem;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.01em;
-  line-height: 1.2;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .brand-titles p {
-  font-size: 0.75rem;
+  font-size: 11px;
   color: var(--text-muted);
-  letter-spacing: 0.02em;
+  font-family: var(--font-mono);
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 2px;
   list-style: none;
 }
 
 .nav-item {
-  padding: 0.45rem 0.85rem;
-  font-size: 0.8125rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-secondary);
   text-decoration: none;
-  border-radius: var(--radius-sm);
-  transition: all 0.15s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
+  border-radius: var(--radius-sharp);
   border: 1px solid transparent;
+  transition: all 0.1s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .nav-item:hover {
   background-color: var(--bg-surface-subtle);
+  border-color: var(--border-hairline);
   color: var(--text-primary);
 }
 
 .nav-item.active {
-  background-color: #f1f5f9;
-  color: #0f172a;
-  border-color: var(--border-strong);
+  background-color: var(--steel-slate);
+  color: #ffffff;
+  border-color: var(--steel-slate);
 }
 
-/* Operational Alert Banner */
+/* Operational Alert Ticker */
 .alert-banner {
-  padding: 0.6rem 1.5rem;
-  font-size: 0.8125rem;
+  padding: 0.4rem 1rem;
+  font-size: 11px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid var(--border-hairline);
   font-family: var(--font-mono);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .alert-banner.safe {
-  background-color: var(--status-safe-bg);
-  border-color: var(--status-safe-border);
-  color: var(--status-safe);
+  background-color: var(--scada-normal-bg);
+  border-color: var(--scada-normal-border);
+  color: var(--scada-normal);
 }
 
 .alert-banner.warning {
-  background-color: var(--status-warning-bg);
-  border-color: var(--status-warning-border);
-  color: var(--status-warning);
+  background-color: var(--scada-warning-bg);
+  border-color: var(--scada-warning-border);
+  color: var(--scada-warning);
 }
 
 .alert-banner.critical {
-  background-color: var(--status-critical-bg);
-  border-color: var(--status-critical-border);
-  color: var(--status-critical);
+  background-color: var(--scada-alarm-bg);
+  border-color: var(--scada-alarm-border);
+  color: var(--scada-alarm);
 }
 
-/* Telemetry Metric Cards */
+/* SCADA Instrument Gauge Strip */
 .telemetry-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.85rem;
-  margin-bottom: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 6px;
+  margin-bottom: 0.75rem;
 }
 
 .metric-card {
   background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 0.85rem 1rem;
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-hairline);
+  border-top: 3px solid var(--border-strong);
+  border-radius: var(--radius-panel);
+  padding: 0.5rem 0.75rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
-  overflow: hidden;
 }
 
-.metric-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3px;
-  height: 100%;
-  background-color: var(--steel-slate);
+.metric-card.safe {
+  border-top-color: var(--scada-normal);
 }
 
-.metric-card.safe::before {
-  background-color: var(--status-safe);
+.metric-card.warning {
+  border-top-color: var(--scada-warning);
 }
 
-.metric-card.warning::before {
-  background-color: var(--status-warning);
-}
-
-.metric-card.critical::before {
-  background-color: var(--status-critical);
+.metric-card.critical {
+  border-top-color: var(--scada-alarm);
 }
 
 .metric-label {
-  font-size: 0.725rem;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-family: var(--font-mono);
 }
 
 .metric-value-row {
   display: flex;
   align-items: baseline;
-  gap: 0.35rem;
-  margin: 0.35rem 0 0.15rem;
+  gap: 4px;
+  margin: 0.25rem 0;
 }
 
 .metric-value {
-  font-size: 1.6rem;
+  font-size: 1.65rem;
   font-weight: 700;
   font-family: var(--font-mono);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   color: var(--text-primary);
+  line-height: 1;
 }
 
 .metric-unit {
-  font-size: 0.85rem;
+  font-size: 11px;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
+  font-family: var(--font-mono);
 }
 
 .metric-meta {
-  font-size: 0.725rem;
+  font-size: 10px;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  border-top: 1px dashed var(--border-hairline);
+  padding-top: 3px;
+  margin-top: 2px;
 }
 
-/* Control Room Surface Panels */
+/* Laboratory Surface Panels */
 .panel {
   background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 1.25rem;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-panel);
+  margin-bottom: 0.75rem;
   overflow: hidden;
 }
 
 .panel-header {
-  padding: 0.85rem 1.15rem;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--border-hairline);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fafbfd;
+  background-color: var(--bg-surface-header);
 }
 
 .panel-title {
-  font-size: 0.9rem;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  letter-spacing: -0.01em;
+  gap: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
 }
 
 .panel-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .panel-body {
-  padding: 1.15rem;
+  padding: 0.75rem;
 }
 
-/* 3D Viewport Container */
+/* 3D Viewport Frame */
 .viewport-3d {
   width: 100%;
-  height: 480px;
-  background-color: #111827;
-  border-radius: var(--radius-sm);
+  height: 460px;
+  background-color: #0b0f19;
   position: relative;
   overflow: hidden;
-  border: 1px solid #1f2937;
+  border-bottom: 1px solid var(--border-hairline);
 }
 
 .viewport-overlay {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 8px;
+  left: 8px;
   z-index: 10;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   pointer-events: none;
 }
 
 .viewport-badge {
-  background-color: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(4px);
+  background-color: rgba(11, 15, 25, 0.92);
   color: #e2e8f0;
-  padding: 4px 8px;
-  font-size: 0.7rem;
+  padding: 2px 6px;
+  font-size: 10px;
   font-family: var(--font-mono);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius-sm);
+  border: 1px solid #1e293b;
+  border-radius: var(--radius-sharp);
   width: fit-content;
 }
 
-.viewport-controls {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  z-index: 10;
-  display: flex;
-  gap: 6px;
-}
-
-/* Buttons */
+/* Industrial Action Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.8125rem;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 11px;
   font-weight: 600;
-  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  border-radius: var(--radius-sharp);
   border: 1px solid var(--border-strong);
   background-color: var(--bg-surface);
   color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: all 0.08s ease;
   text-decoration: none;
+  line-height: 1.2;
 }
 
 .btn:hover {
-  background-color: var(--bg-surface-subtle);
-  border-color: #94a3b8;
+  background-color: var(--bg-control);
+  border-color: var(--steel-slate);
 }
 
 .btn-primary {
-  background-color: #0f172a;
-  color: #fff;
-  border-color: #0f172a;
+  background-color: var(--steel-slate);
+  color: #ffffff;
+  border-color: var(--steel-slate);
 }
 
 .btn-primary:hover {
-  background-color: #1e293b;
+  background-color: #0f172a;
 }
 
 .btn-danger {
   background-color: #fef2f2;
-  color: #b91c1c;
-  border-color: #fecaca;
+  color: var(--scada-alarm);
+  border-color: var(--scada-alarm-border);
 }
 
 .btn-danger:hover {
   background-color: #fee2e2;
-  border-color: #f87171;
+  border-color: var(--scada-alarm);
 }
 
 .btn-warning {
   background-color: #fffbeb;
-  color: #b45309;
-  border-color: #fde68a;
+  color: var(--scada-warning);
+  border-color: var(--scada-warning-border);
 }
 
 .btn-warning:hover {
@@ -431,43 +412,44 @@ body {
 }
 
 .btn-sm {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.75rem;
+  padding: 0.2rem 0.45rem;
+  font-size: 10px;
 }
 
-/* Status Badges */
+/* SCADA Status Badges */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.2rem 0.55rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.725rem;
-  font-weight: 600;
+  gap: 0.25rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sharp);
+  font-size: 10px;
+  font-weight: 700;
   font-family: var(--font-mono);
   border: 1px solid transparent;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .badge-safe {
-  background-color: var(--status-safe-bg);
-  color: var(--status-safe);
-  border-color: var(--status-safe-border);
+  background-color: var(--scada-normal-bg);
+  color: var(--scada-normal);
+  border-color: var(--scada-normal-border);
 }
 
 .badge-warning {
-  background-color: var(--status-warning-bg);
-  color: var(--status-warning);
-  border-color: var(--status-warning-border);
+  background-color: var(--scada-warning-bg);
+  color: var(--scada-warning);
+  border-color: var(--scada-warning-border);
 }
 
 .badge-critical {
-  background-color: var(--status-critical-bg);
-  color: var(--status-critical);
-  border-color: var(--status-critical-border);
+  background-color: var(--scada-alarm-bg);
+  color: var(--scada-alarm);
+  border-color: var(--scada-alarm-border);
 }
 
-/* Technical Data Tables */
+/* Tabular Dispatch Roster */
 .table-container {
   overflow-x: auto;
 }
@@ -475,25 +457,36 @@ body {
 .tech-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.8125rem;
+  font-size: 11px;
   text-align: left;
+  font-family: var(--font-mono);
 }
 
 .tech-table th {
-  background-color: #fafbfd;
+  background-color: var(--bg-surface-header);
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.7rem;
+  font-size: 10px;
   letter-spacing: 0.05em;
-  padding: 0.65rem 0.85rem;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--border-hairline);
+  border-right: 1px solid var(--border-hairline);
+}
+
+.tech-table th:last-child {
+  border-right: none;
 }
 
 .tech-table td {
-  padding: 0.75rem 0.85rem;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--border-hairline);
+  border-right: 1px solid var(--border-hairline);
   color: var(--text-secondary);
+}
+
+.tech-table td:last-child {
+  border-right: none;
 }
 
 .tech-table tr:hover td {
@@ -501,94 +494,96 @@ body {
 }
 
 .tech-table tr.selected td {
-  background-color: #f1f5f9;
+  background-color: #e2e8f0;
+  color: #0f172a;
 }
 
 /* Quality Score Progress Meter */
 .meter-container {
   width: 100%;
-  height: 6px;
+  height: 4px;
   background-color: #e2e8f0;
-  border-radius: 999px;
+  border-radius: 1px;
   overflow: hidden;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .meter-fill {
   height: 100%;
-  border-radius: 999px;
-  transition: width 0.3s ease;
+  border-radius: 1px;
+  transition: width 0.2s ease;
 }
 
 .meter-fill.safe {
-  background-color: #16a34a;
+  background-color: var(--scada-normal);
 }
 
 .meter-fill.warning {
-  background-color: #d97706;
+  background-color: var(--scada-warning);
 }
 
 .meter-fill.critical {
-  background-color: #dc2626;
+  background-color: var(--scada-alarm);
 }
 
-/* Operational Recommendation Bar */
+/* SCADA Dispatch Advisory Block */
 .recommendation-box {
-  background-color: #fafbfc;
-  border: 1px solid var(--border-subtle);
-  border-left: 4px solid #0f172a;
-  border-radius: var(--radius-sm);
-  padding: 0.85rem 1.15rem;
-  margin-bottom: 1.25rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  border-left: 4px solid var(--steel-slate);
+  border-radius: var(--radius-sharp);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
   display: flex;
   align-items: flex-start;
-  gap: 0.85rem;
+  gap: 0.65rem;
+  font-family: var(--font-mono);
 }
 
 .recommendation-box.critical {
-  border-left-color: var(--status-critical);
-  background-color: #fffafb;
+  border-left-color: var(--scada-alarm);
+  background-color: #fffdfd;
 }
 
 .recommendation-box.warning {
-  border-left-color: var(--status-warning);
-  background-color: #fffefb;
+  border-left-color: var(--scada-warning);
+  background-color: #fffefa;
 }
 
 .recommendation-box.safe {
-  border-left-color: var(--status-safe);
-  background-color: #fbfdfb;
+  border-left-color: var(--scada-normal);
+  background-color: #fcfdfc;
 }
 
-/* Grid splits */
+/* Grid Layouts */
 .split-layout {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
-  gap: 1.25rem;
+  gap: 0.75rem;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1080px) {
   .split-layout {
     grid-template-columns: 1fr;
   }
 }
 
-/* Batch Inspector Drawer / Modal */
+/* Inspector Drawer */
 .inspector-panel {
   background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 1.15rem;
+  border: 1px solid var(--border-hairline);
+  padding: 0.75rem;
 }
 
 .inspector-field {
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.4rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8125rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px dashed var(--border-subtle);
+  font-size: 11px;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px dashed var(--border-hairline);
+  font-family: var(--font-mono);
 }
 
 .inspector-field .label {
@@ -597,102 +592,28 @@ body {
 
 .inspector-field .val {
   font-weight: 600;
-  font-family: var(--font-mono);
   color: var(--text-primary);
 }
 
-/* Traceability Timeline */
-.timeline-step {
-  position: relative;
-  padding-left: 28px;
-  margin-bottom: 1.5rem;
-}
-
-.timeline-step:last-child {
-  margin-bottom: 0;
-}
-
-.timeline-step::before {
-  content: '';
-  position: absolute;
-  left: 8px;
-  top: 18px;
-  bottom: -18px;
-  width: 2px;
-  background-color: var(--border-strong);
-}
-
-.timeline-step:last-child::before {
-  display: none;
-}
-
-.timeline-marker {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background-color: #fff;
-  border: 3px solid var(--steel-slate);
-}
-
-.timeline-marker.done {
-  border-color: #166534;
-  background-color: #166534;
-}
-
-.timeline-marker.active {
-  border-color: #0284c7;
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
-}
-
-/* Subtle Pulsing Beacon */
+/* Status Indicator Dot */
 .pulse-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   display: inline-block;
 }
 
 .pulse-dot.online {
   background-color: #16a34a;
-  box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
-  animation: pulse 2s infinite;
 }
 
 .pulse-dot.alert {
   background-color: #dc2626;
-  box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
   animation: pulse-red 1.2s infinite;
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 6px rgba(22, 163, 74, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
-  }
-}
-
 @keyframes pulse-red {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.8);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
-  }
+  0% { transform: scale(0.95); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.5; }
+  100% { transform: scale(0.95); opacity: 1; }
 }

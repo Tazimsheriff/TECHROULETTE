@@ -1,24 +1,54 @@
-import React, { useRef, useState, Suspense } from 'react';
+import React, { useRef, useState, Suspense, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useTwin } from '../../context/TwinContext';
 import { Batch } from '../../types';
 
-// Individual Tomato Crate with dynamic quality color & selection
+// Helper to generate an authentic crisp printed batch lot plate in WebGL
+const useLotTexture = (id: string, score: number) => {
+  return useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 96;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, 256, 96);
+      ctx.fillStyle = score >= 75 ? '#15803d' : score >= 45 ? '#b45309' : '#b91c1c';
+      ctx.fillRect(0, 0, 16, 96);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 44px monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(id, 28, 48);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '24px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${score}%`, 242, 48);
+    }
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.minFilter = THREE.LinearFilter;
+    return texture;
+  }, [id, score]);
+};
+
+// Individual Tomato Crate with structural slats & lot plate
 const TomatoCrate: React.FC<{
   batch: Batch;
   isSelected: boolean;
   onSelect: (id: string) => void;
 }> = ({ batch, isSelected, onSelect }) => {
   const [hovered, setHovered] = useState(false);
+  const lotTexture = useLotTexture(batch.id, Math.round(batch.qualityScore));
 
-  // Quality color mapping
-  const color = batch.qualityScore >= 75
-    ? '#15803d' // Forest green: safe
+  const bodyColor = batch.qualityScore >= 75
+    ? '#166534' // Agricultural dark green
     : batch.qualityScore >= 45
-    ? '#d97706' // Warning amber
-    : '#dc2626'; // Emergency red
+    ? '#b45309' // Warning amber
+    : '#991b1b'; // Emergency crimson
 
   return (
     <group
@@ -33,105 +63,106 @@ const TomatoCrate: React.FC<{
       }}
       onPointerOut={() => setHovered(false)}
     >
-      {/* Selection / Hover bounding frame */}
+      {/* High-visibility selection wireframe bracket */}
       {(isSelected || hovered) && (
         <mesh position={[0, 0.22, 0]}>
-          <boxGeometry args={[1.12, 0.48, 0.82]} />
+          <boxGeometry args={[1.08, 0.46, 0.78]} />
           <meshBasicMaterial
-            color={isSelected ? '#38bdf8' : '#cbd5e1'}
+            color={isSelected ? '#0284c7' : '#94a3b8'}
             wireframe
-            transparent
-            opacity={0.8}
+            wireframeLinewidth={2}
           />
         </mesh>
       )}
 
-      {/* Main Crate Box */}
+      {/* Main Crate Polymer Basin */}
       <mesh castShadow receiveShadow position={[0, 0.2, 0]}>
-        <boxGeometry args={[1.0, 0.4, 0.7]} />
-        <meshStandardMaterial
-          color={color}
-          roughness={0.4}
-          metalness={0.1}
-        />
+        <boxGeometry args={[1.0, 0.38, 0.7]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.1} />
       </mesh>
 
-      {/* Crate Lip / Rim */}
-      <mesh position={[0, 0.38, 0]}>
-        <boxGeometry args={[1.04, 0.05, 0.74]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.7} />
+      {/* Reinforced Structural Corner Posts */}
+      {[-0.48, 0.48].map((x, i) =>
+        [-0.33, 0.33].map((z, j) => (
+          <mesh key={`post-${i}-${j}`} position={[x, 0.21, z]}>
+            <boxGeometry args={[0.06, 0.42, 0.06]} />
+            <meshStandardMaterial color="#0f172a" roughness={0.7} />
+          </mesh>
+        ))
+      )}
+
+      {/* Stack Lip Frame */}
+      <mesh position={[0, 0.4, 0]}>
+        <boxGeometry args={[1.02, 0.04, 0.72]} />
+        <meshStandardMaterial color="#1e293b" roughness={0.8} />
       </mesh>
 
-      {/* Tomato contents (Simulated red fruit spheres inside) */}
-      <group position={[0, 0.32, 0]}>
-        {[-0.32, 0, 0.32].map((x, i) =>
-          [-0.18, 0.18].map((z, j) => (
-            <mesh key={`${i}-${j}`} position={[x, 0, z]}>
-              <sphereGeometry args={[0.11, 8, 8]} />
+      {/* Tomato Contents inside Crate */}
+      <group position={[0, 0.3, 0]}>
+        {[-0.3, 0, 0.3].map((x, i) =>
+          [-0.16, 0.16].map((z, j) => (
+            <mesh key={`tom-${i}-${j}`} position={[x, 0, z]}>
+              <sphereGeometry args={[0.1, 8, 8]} />
               <meshStandardMaterial
-                color={batch.qualityScore < 45 ? '#7f1d1d' : '#e11d48'}
-                roughness={0.3}
+                color={batch.qualityScore < 45 ? '#7f1d1d' : '#dc2626'}
+                roughness={0.25}
               />
             </mesh>
           ))
         )}
       </group>
 
-      {/* Batch ID Procedural Canvas Plate */}
-      <mesh position={[0, 0.22, 0.36]}>
-        <planeGeometry args={[0.55, 0.22]} />
-        <meshBasicMaterial color="#0f172a" />
-      </mesh>
-      <mesh position={[0, 0.22, 0.365]}>
-        <planeGeometry args={[0.5, 0.18]} />
-        <meshBasicMaterial color={color} />
+      {/* Printed Batch ID Plate on Crate Face */}
+      <mesh position={[0, 0.2, 0.355]}>
+        <planeGeometry args={[0.62, 0.22]} />
+        <meshBasicMaterial map={lotTexture} />
       </mesh>
     </group>
   );
 };
 
-// Wall-mounted Cooling Unit with Spinning Fan
+// Evaporator Refrigeration Loop with Aerodynamic Fan
 const CoolingUnit: React.FC<{ coolingOn: boolean; health: string }> = ({ coolingOn, health }) => {
   const fanRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
     if (coolingOn && health !== 'failed' && fanRef.current) {
-      fanRef.current.rotation.z -= delta * 12;
+      fanRef.current.rotation.z -= delta * 14;
     }
   });
 
-  const housingColor = health === 'failed' ? '#ef4444' : '#64748b';
+  const housingColor = health === 'failed' ? '#991b1b' : '#334155';
 
   return (
     <group position={[-2.85, 2.1, 0]}>
-      {/* Evaporator Unit Housing */}
+      {/* Heavy Sheetmetal Housing */}
       <mesh castShadow position={[0.2, 0, 0]}>
         <boxGeometry args={[0.35, 0.75, 1.4]} />
-        <meshStandardMaterial color={housingColor} metalness={0.4} roughness={0.3} />
+        <meshStandardMaterial color={housingColor} metalness={0.5} roughness={0.3} />
       </mesh>
 
-      {/* Louver Grill */}
-      <mesh position={[0.39, 0, 0]}>
+      {/* Intake Louver Grille */}
+      <mesh position={[0.38, 0, 0]}>
         <boxGeometry args={[0.02, 0.65, 1.25]} />
-        <meshStandardMaterial color="#0f172a" roughness={0.8} />
+        <meshStandardMaterial color="#0f172a" roughness={0.9} />
       </mesh>
 
-      {/* Fan Blades */}
-      <group ref={fanRef} position={[0.41, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+      {/* Rotating Fan Assembly */}
+      <group ref={fanRef} position={[0.4, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
         <mesh>
-          <cylinderGeometry args={[0.06, 0.06, 0.04, 12]} />
-          <meshStandardMaterial color="#334155" />
+          <cylinderGeometry args={[0.08, 0.08, 0.03, 12]} />
+          <meshStandardMaterial color="#1e293b" />
         </mesh>
         {[0, 60, 120, 180, 240, 300].map((angle, i) => (
           <mesh key={i} rotation={[0, 0, (angle * Math.PI) / 180]} position={[0, 0.16, 0]}>
-            <boxGeometry args={[0.07, 0.22, 0.015]} />
-            <meshStandardMaterial color={coolingOn ? '#38bdf8' : '#94a3b8'} />
+            <boxGeometry args={[0.06, 0.22, 0.015]} />
+            <meshStandardMaterial color={coolingOn ? '#38bdf8' : '#64748b'} />
           </mesh>
         ))}
       </group>
 
-      {/* Status LED */}
-      <mesh position={[0.39, 0.28, 0.55]}>
+      {/* Instrument Status Beacon */}
+      <mesh position={[0.38, 0.28, 0.55]}>
         <sphereGeometry args={[0.035, 8, 8]} />
         <meshBasicMaterial color={health === 'failed' ? '#ef4444' : coolingOn ? '#22c55e' : '#f59e0b'} />
       </mesh>
@@ -139,13 +170,13 @@ const CoolingUnit: React.FC<{ coolingOn: boolean; health: string }> = ({ cooling
   );
 };
 
-// Insulated Access Door that smoothly hinges open
+// Insulated Vault Seal Door
 const InsulatedDoor: React.FC<{ doorOpen: boolean }> = ({ doorOpen }) => {
   const doorHingeRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
     if (doorHingeRef.current) {
-      const targetAngle = doorOpen ? Math.PI * 0.45 : 0;
+      const targetAngle = doorOpen ? Math.PI * 0.42 : 0;
       doorHingeRef.current.rotation.y = THREE.MathUtils.lerp(
         doorHingeRef.current.rotation.y,
         targetAngle,
@@ -156,45 +187,45 @@ const InsulatedDoor: React.FC<{ doorOpen: boolean }> = ({ doorOpen }) => {
 
   return (
     <group position={[2.9, 0, 1.3]}>
-      {/* Door Frame on Right Wall */}
+      {/* Structural Jamb */}
       <mesh position={[0, 1.4, 0]}>
         <boxGeometry args={[0.15, 2.8, 1.4]} />
-        <meshStandardMaterial color="#334155" roughness={0.8} />
+        <meshStandardMaterial color="#1e293b" roughness={0.8} />
       </mesh>
 
-      {/* Rotating Door Panel from Hinge */}
+      {/* Rotating Insulated Leaf Panel */}
       <group ref={doorHingeRef} position={[0, 0, 0.65]}>
         <mesh position={[0, 1.4, -0.6]} castShadow>
           <boxGeometry args={[0.12, 2.65, 1.2]} />
-          <meshStandardMaterial color="#cbd5e1" metalness={0.2} roughness={0.5} />
+          <meshStandardMaterial color="#94a3b8" metalness={0.3} roughness={0.4} />
         </mesh>
 
-        {/* Industrial Door Handle */}
+        {/* Compression Lock Bar Handle */}
         <mesh position={[-0.1, 1.4, -1.05]}>
-          <boxGeometry args={[0.06, 0.4, 0.06]} />
-          <meshStandardMaterial color="#0f172a" metalness={0.8} />
+          <boxGeometry args={[0.05, 0.5, 0.05]} />
+          <meshStandardMaterial color="#0f172a" metalness={0.9} />
         </mesh>
       </group>
     </group>
   );
 };
 
-// Roof Solar Photovoltaic Array
+// Photovoltaic Solar Array
 const SolarArray: React.FC<{ solarPower: number }> = ({ solarPower }) => {
-  const solarActive = solarPower > 100;
+  const isGenerating = solarPower > 80;
   return (
-    <group position={[0, 3.25, 0]} rotation={[-0.15, 0, 0]}>
-      {/* Solar Frame Rack */}
+    <group position={[0, 3.25, 0]} rotation={[-0.12, 0, 0]}>
+      {/* Sub-rack Aluminum Girders */}
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[5.2, 0.08, 2.6]} />
-        <meshStandardMaterial color="#1e293b" metalness={0.7} roughness={0.3} />
+        <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} />
       </mesh>
 
-      {/* Monocrystalline Solar Cell Grid */}
+      {/* Silicon Solar Cells */}
       <mesh position={[0, 0.05, 0]}>
         <boxGeometry args={[5.0, 0.02, 2.4]} />
         <meshStandardMaterial
-          color={solarActive ? '#1e3a8a' : '#0f172a'}
+          color={isGenerating ? '#172554' : '#090d16'}
           metalness={0.9}
           roughness={0.15}
         />
@@ -203,27 +234,26 @@ const SolarArray: React.FC<{ solarPower: number }> = ({ solarPower }) => {
   );
 };
 
-// Lithium-Ion Battery Storage Cabinet with LED charge level
+// Lithium-Ion Energy Cabinet
 const BatteryCabinet: React.FC<{ batteryPercent: number }> = ({ batteryPercent }) => {
-  const chargeLeds = [20, 40, 60, 80, 100];
-
+  const steps = [20, 40, 60, 80, 100];
   return (
     <group position={[-2.8, 0.7, 1.4]}>
-      {/* Cabinet Box */}
+      {/* NEMA Enclosure */}
       <mesh castShadow position={[0.2, 0, 0]}>
         <boxGeometry args={[0.4, 1.4, 0.7]} />
-        <meshStandardMaterial color="#1e293b" metalness={0.6} roughness={0.4} />
+        <meshStandardMaterial color="#0f172a" metalness={0.7} roughness={0.3} />
       </mesh>
 
-      {/* Battery Title & LEDs */}
+      {/* Charge Status LED Ladder */}
       <group position={[0.41, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-        {chargeLeds.map((threshold, idx) => {
-          const isLit = batteryPercent >= threshold;
-          const ledColor = threshold <= 20 ? '#ef4444' : threshold <= 40 ? '#f59e0b' : '#22c55e';
+        {steps.map((level, idx) => {
+          const isLit = batteryPercent >= level;
+          const ledColor = level <= 20 ? '#ef4444' : level <= 40 ? '#f59e0b' : '#22c55e';
           return (
-            <mesh key={idx} position={[-0.18 + idx * 0.09, 0.45, 0]}>
-              <boxGeometry args={[0.06, 0.03, 0.01]} />
-              <meshBasicMaterial color={isLit ? ledColor : '#334155'} />
+            <mesh key={idx} position={[-0.16 + idx * 0.08, 0.45, 0]}>
+              <boxGeometry args={[0.05, 0.025, 0.01]} />
+              <meshBasicMaterial color={isLit ? ledColor : '#1e293b'} />
             </mesh>
           );
         })}
@@ -232,17 +262,17 @@ const BatteryCabinet: React.FC<{ batteryPercent: number }> = ({ batteryPercent }
   );
 };
 
-// Emergency Flashing Strobe Beacon
+// Strobe Alarm Beacon
 const AlarmBeacon: React.FC<{ active: boolean }> = ({ active }) => {
   const beaconRef = useRef<THREE.Mesh>(null);
 
   useFrame(({ clock }) => {
     if (beaconRef.current) {
       if (active) {
-        const pulse = (Math.sin(clock.getElapsedTime() * 10) + 1) / 2;
-        (beaconRef.current.material as THREE.MeshBasicMaterial).opacity = 0.3 + pulse * 0.7;
+        const pulse = (Math.sin(clock.getElapsedTime() * 12) + 1) / 2;
+        (beaconRef.current.material as THREE.MeshBasicMaterial).opacity = 0.2 + pulse * 0.8;
       } else {
-        (beaconRef.current.material as THREE.MeshBasicMaterial).opacity = 0.2;
+        (beaconRef.current.material as THREE.MeshBasicMaterial).opacity = 0.15;
       }
     }
   });
@@ -250,154 +280,141 @@ const AlarmBeacon: React.FC<{ active: boolean }> = ({ active }) => {
   return (
     <group position={[0, 3.0, 1.8]}>
       <mesh position={[0, 0, 0]}>
-        <cylinderGeometry args={[0.12, 0.12, 0.1, 16]} />
-        <meshStandardMaterial color="#334155" />
+        <cylinderGeometry args={[0.1, 0.1, 0.08, 16]} />
+        <meshStandardMaterial color="#1e293b" />
       </mesh>
-      <mesh ref={beaconRef} position={[0, 0.12, 0]}>
-        <sphereGeometry args={[0.12, 16, 16]} />
-        <meshBasicMaterial color="#ef4444" transparent opacity={active ? 0.9 : 0.2} />
+      <mesh ref={beaconRef} position={[0, 0.1, 0]}>
+        <sphereGeometry args={[0.1, 16, 16]} />
+        <meshBasicMaterial color="#ef4444" transparent opacity={active ? 0.9 : 0.15} />
       </mesh>
     </group>
   );
 };
 
-// Shelving racks (Left & Right aisle)
+// Structural Shelving Racks
 const StorageShelves: React.FC = () => {
   return (
     <group>
-      {/* Left Shelving Unit */}
-      <group position={[-1.8, 0, -0.9]}>
-        {/* Upright Posts */}
-        {[-0.6, 0.6].map((x, i) =>
-          [-0.4, 0.4].map((z, j) => (
-            <mesh key={`l-${i}-${j}`} position={[x, 1.2, z]}>
-              <boxGeometry args={[0.06, 2.4, 0.06]} />
+      {[-1.8, 0, 1.8].map((posX, sIdx) => (
+        <group key={`shelf-${sIdx}`} position={[posX, 0, -0.9]}>
+          {/* Vertical Steel Posts */}
+          {[-0.6, 0.6].map((x, i) =>
+            [-0.4, 0.4].map((z, j) => (
+              <mesh key={`post-${i}-${j}`} position={[x, 1.2, z]}>
+                <boxGeometry args={[0.05, 2.4, 0.05]} />
+                <meshStandardMaterial color="#334155" metalness={0.8} roughness={0.25} />
+              </mesh>
+            ))
+          )}
+          {/* Horizontal Channel Decks */}
+          {[0.2, 1.1, 2.0].map((y, k) => (
+            <mesh key={`deck-${k}`} position={[0, y, 0]}>
+              <boxGeometry args={[1.3, 0.03, 0.86]} />
               <meshStandardMaterial color="#475569" metalness={0.7} roughness={0.3} />
             </mesh>
-          ))
-        )}
-        {/* Shelf Decks */}
-        {[0.2, 1.1, 2.0].map((y, k) => (
-          <mesh key={`lshelf-${k}`} position={[0, y, 0]}>
-            <boxGeometry args={[1.3, 0.04, 0.88]} />
-            <meshStandardMaterial color="#64748b" metalness={0.6} roughness={0.4} />
-          </mesh>
-        ))}
-      </group>
-
-      {/* Middle Shelving Unit */}
-      <group position={[0, 0, -0.9]}>
-        {[-0.6, 0.6].map((x, i) =>
-          [-0.4, 0.4].map((z, j) => (
-            <mesh key={`m-${i}-${j}`} position={[x, 1.2, z]}>
-              <boxGeometry args={[0.06, 2.4, 0.06]} />
-              <meshStandardMaterial color="#475569" metalness={0.7} roughness={0.3} />
-            </mesh>
-          ))
-        )}
-        {[0.2, 1.1, 2.0].map((y, k) => (
-          <mesh key={`mshelf-${k}`} position={[0, y, 0]}>
-            <boxGeometry args={[1.3, 0.04, 0.88]} />
-            <meshStandardMaterial color="#64748b" metalness={0.6} roughness={0.4} />
-          </mesh>
-        ))}
-      </group>
-
-      {/* Right Shelving Unit */}
-      <group position={[1.8, 0, -0.9]}>
-        {[-0.6, 0.6].map((x, i) =>
-          [-0.4, 0.4].map((z, j) => (
-            <mesh key={`r-${i}-${j}`} position={[x, 1.2, z]}>
-              <boxGeometry args={[0.06, 2.4, 0.06]} />
-              <meshStandardMaterial color="#475569" metalness={0.7} roughness={0.3} />
-            </mesh>
-          ))
-        )}
-        {[0.2, 1.1, 2.0].map((y, k) => (
-          <mesh key={`rshelf-${k}`} position={[0, y, 0]}>
-            <boxGeometry args={[1.3, 0.04, 0.88]} />
-            <meshStandardMaterial color="#64748b" metalness={0.6} roughness={0.4} />
-          </mesh>
-        ))}
-      </group>
+          ))}
+        </group>
+      ))}
     </group>
   );
 };
 
-// The Main Cold Storage Room Enclosure (Open Cutaway for judges)
+// Cold Vault Cutaway Chamber Structure with Floor Grid
 const RoomEnclosure: React.FC<{ temperature: number }> = ({ temperature }) => {
-  // Atmospheric floor tint shifting with temperature
-  const floorTint = temperature > 12 ? '#451a1a' : temperature > 8.5 ? '#3b2f15' : '#1e293b';
+  const floorColor = temperature > 12 ? '#241414' : temperature > 8.5 ? '#1f1b13' : '#0f172a';
 
   return (
     <group>
-      {/* Insulated Concrete Floor */}
+      {/* Floor Slab */}
       <mesh receiveShadow position={[0, -0.05, 0]}>
         <boxGeometry args={[6.2, 0.1, 4.2]} />
-        <meshStandardMaterial color={floorTint} roughness={0.8} />
+        <meshStandardMaterial color={floorColor} roughness={0.8} />
       </mesh>
 
-      {/* Back Wall */}
+      {/* Coordinate Grid on Floor */}
+      <gridHelper args={[6.0, 12, '#334155', '#1e293b']} position={[0, 0.01, 0]} />
+
+      {/* Rear Insulated Wall */}
       <mesh receiveShadow position={[0, 1.5, -2.05]}>
         <boxGeometry args={[6.2, 3.0, 0.1]} />
-        <meshStandardMaterial color="#f1f5f9" roughness={0.9} />
+        <meshStandardMaterial color="#cbd5e1" roughness={0.9} />
       </mesh>
 
       {/* Left Wall */}
       <mesh receiveShadow position={[-3.05, 1.5, 0]}>
         <boxGeometry args={[0.1, 3.0, 4.2]} />
-        <meshStandardMaterial color="#e2e8f0" roughness={0.9} />
+        <meshStandardMaterial color="#b4bcc8" roughness={0.9} />
       </mesh>
 
-      {/* Right Wall with doorway cutout */}
+      {/* Right Wall with Doorway */}
       <mesh receiveShadow position={[3.05, 1.5, -1.0]}>
         <boxGeometry args={[0.1, 3.0, 2.2]} />
-        <meshStandardMaterial color="#e2e8f0" roughness={0.9} />
+        <meshStandardMaterial color="#b4bcc8" roughness={0.9} />
       </mesh>
 
-      {/* Ceiling / Roof Support Beams */}
+      {/* Roof Steel Framing */}
       <mesh position={[0, 3.0, 0]}>
-        <boxGeometry args={[6.2, 0.1, 4.2]} />
-        <meshStandardMaterial color="#334155" metalness={0.5} roughness={0.5} />
+        <boxGeometry args={[6.2, 0.08, 4.2]} />
+        <meshStandardMaterial color="#1e293b" metalness={0.6} />
       </mesh>
     </group>
   );
 };
 
-// Exported Interactive 3D Component
 export const ColdStorageScene: React.FC<{
   enableControls?: boolean;
   onSelectBatch?: (id: string) => void;
 }> = ({ enableControls = true, onSelectBatch }) => {
   const { state, selectedBatchId, setSelectedBatchId } = useTwin();
+  const controlsRef = useRef<any>(null);
 
   const handleSelect = (id: string) => {
     setSelectedBatchId(id);
     if (onSelectBatch) onSelectBatch(id);
   };
 
-  // Environmental lighting color shift
-  const ambientColor = state.temperature > 12.0
-    ? '#fecaca' // warm reddish thermal breach
-    : state.temperature > 8.5
-    ? '#fef3c7' // amber warning
-    : '#e0f2fe'; // crisp cold refrigeration cyan
-
   const isAlarm = state.overallRisk === 'critical' || state.temperature > 12.0;
+
+  // Engineering Camera Presets
+  const setCameraView = (view: 'isometric' | 'front' | 'shelf' | 'chiller') => {
+    if (!controlsRef.current) return;
+    if (view === 'isometric') {
+      controlsRef.current.object.position.set(0, 4.2, 6.2);
+      controlsRef.current.target.set(0, 1.2, 0);
+    } else if (view === 'front') {
+      controlsRef.current.object.position.set(0, 1.6, 5.8);
+      controlsRef.current.target.set(0, 1.2, 0);
+    } else if (view === 'shelf') {
+      controlsRef.current.object.position.set(1.4, 2.0, 2.6);
+      controlsRef.current.target.set(0.8, 1.0, -0.8);
+    } else if (view === 'chiller') {
+      controlsRef.current.object.position.set(-1.6, 2.5, 2.2);
+      controlsRef.current.target.set(-2.5, 2.0, 0);
+    }
+    controlsRef.current.update();
+  };
 
   return (
     <div className="viewport-3d">
-      {/* 3D Heads-Up Status Overlay */}
+      {/* Telemetry HUD */}
       <div className="viewport-overlay">
         <div className="viewport-badge">
-          3D COLD TWIN: <strong style={{ color: '#38bdf8' }}>ONLINE</strong>
+          MODEL: <strong>DIGITAL TWIN [SPATIAL_V2]</strong>
         </div>
         <div className="viewport-badge">
-          CORE CHAMBER TEMP: <strong style={{ color: state.temperature > 12 ? '#ef4444' : '#22c55e' }}>{state.temperature}°C</strong>
+          CHAMBER SENSOR: <strong style={{ color: state.temperature > 12 ? '#ef4444' : '#22c55e' }}>{state.temperature}°C</strong>
         </div>
         <div className="viewport-badge">
-          CHILLER: <strong style={{ color: state.coolingOn ? '#22c55e' : '#ef4444' }}>{state.coolingOn ? 'ACTIVE' : 'OFFLINE'}</strong>
+          EVAP FAN: <strong style={{ color: state.coolingOn ? '#22c55e' : '#ef4444' }}>{state.coolingOn ? `${state.fanRpm} RPM` : 'STANDSTILL'}</strong>
         </div>
+      </div>
+
+      {/* Engineering Viewpoint Selector */}
+      <div style={{ position: 'absolute', bottom: 8, right: 8, zIndex: 10, display: 'flex', gap: 4 }}>
+        <button className="btn btn-sm" onClick={() => setCameraView('isometric')}>Isometric</button>
+        <button className="btn btn-sm" onClick={() => setCameraView('front')}>Elevation</button>
+        <button className="btn btn-sm" onClick={() => setCameraView('shelf')}>Shelves</button>
+        <button className="btn btn-sm" onClick={() => setCameraView('chiller')}>Evaporator</button>
       </div>
 
       <Canvas
@@ -406,22 +423,15 @@ export const ColdStorageScene: React.FC<{
         style={{ width: '100%', height: '100%' }}
       >
         <Suspense fallback={null}>
-          {/* Dynamic environmental lighting */}
-          <ambientLight intensity={0.85} color={ambientColor} />
-          <directionalLight
-            position={[5, 8, 5]}
-            intensity={1.1}
-            castShadow
-            shadow-mapSize={[1024, 1024]}
-          />
+          <ambientLight intensity={0.75} />
+          <directionalLight position={[6, 9, 6]} intensity={1.2} castShadow />
           <pointLight
-            position={[0, 2.6, 0]}
-            intensity={isAlarm ? 1.8 : 0.6}
-            color={isAlarm ? '#ef4444' : '#bae6fd'}
+            position={[0, 2.5, 0]}
+            intensity={isAlarm ? 1.8 : 0.4}
+            color={isAlarm ? '#ef4444' : '#93c5fd'}
             distance={8}
           />
 
-          {/* Cold Storage Architecture */}
           <RoomEnclosure temperature={state.temperature} />
           <StorageShelves />
           <CoolingUnit coolingOn={state.coolingOn} health={state.refrigeratorHealth} />
@@ -430,7 +440,6 @@ export const ColdStorageScene: React.FC<{
           <BatteryCabinet batteryPercent={state.batteryPercent} />
           <AlarmBeacon active={isAlarm} />
 
-          {/* 6 Batches of Tomato Crates */}
           {state.batches.map((batch) => (
             <TomatoCrate
               key={batch.id}
@@ -440,12 +449,12 @@ export const ColdStorageScene: React.FC<{
             />
           ))}
 
-          {/* Orbit Camera Controls */}
           {enableControls && (
             <OrbitControls
+              ref={controlsRef}
               enableDamping
               dampingFactor={0.05}
-              minDistance={3.5}
+              minDistance={3.0}
               maxDistance={12}
               maxPolarAngle={Math.PI / 2 - 0.05}
             />
