@@ -13,6 +13,7 @@
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "@types/three": "^0.185.4",
+    "@wokwi/elements": "^1.9.2",
     "lucide-react": "^1.43.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.8",
