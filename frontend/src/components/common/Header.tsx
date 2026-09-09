@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTwin } from '../../context/TwinContext';
 import {
@@ -13,12 +13,33 @@ import {
   Layers,
   LineChart,
   BookOpen,
-  CheckCircle2
+  CheckCircle2,
+  X,
+  Bell
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { state, isConnected, triggerSimulation } = useTwin();
   const location = useLocation();
+
+  const [isAlertDismissed, setIsAlertDismissed] = useState(false);
+  const [acknowledgedAlert, setAcknowledgedAlert] = useState<string | null>(null);
+
+  // If a new alert message appears, make sure the banner pops up again
+  useEffect(() => {
+    if (state.activeAlert && state.activeAlert !== acknowledgedAlert) {
+      setIsAlertDismissed(false);
+    }
+  }, [state.activeAlert, acknowledgedAlert]);
+
+  const handleClearAlert = () => {
+    setIsAlertDismissed(true);
+    setAcknowledgedAlert(state.activeAlert);
+  };
+
+  const handleRestoreAlert = () => {
+    setIsAlertDismissed(false);
+  };
 
   const navItems = [
     { path: '/', label: 'Overview', icon: LayoutDashboard, color: '#2563eb', bg: '#eff6ff', border: '#bfdbfe' },
@@ -95,16 +116,12 @@ export const Header: React.FC = () => {
       {/* Main branding & color navigation row */}
       <div className="header-main">
         <div className="brand-section">
-          <div className="brand-badge" style={{ backgroundColor: '#0284c7', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontWeight: 800 }}>
+          <div className="brand-badge">
             FV-TWIN
           </div>
           <div className="brand-titles">
-            <h1 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-              FreshVault Cold-Chain Twin
-            </h1>
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0, fontWeight: 500 }}>
-              Solar Cold Storage & Postharvest Quality Digital Twin • UN-FAO SSTC
-            </p>
+            <h1>FreshVault Cold-Chain Twin</h1>
+            <p>Solar Cold Storage & Postharvest Quality Digital Twin • UN-FAO SSTC</p>
           </div>
         </div>
 
@@ -135,15 +152,20 @@ export const Header: React.FC = () => {
         </nav>
       </div>
 
-      {/* Active Alert Banner if abnormal condition */}
-      {state.activeAlert && (
+      {/* Active Alert Banner if abnormal condition and NOT dismissed */}
+      {state.activeAlert && !isAlertDismissed && (
         <div className={`alert-banner ${state.overallRisk}`} style={{ padding: '0.65rem 2rem', fontSize: '14px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <AlertTriangle size={17} />
-            <span style={{ fontWeight: 600 }}>{state.activeAlert}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flex: 1, minWidth: 0 }}>
+            <AlertTriangle size={17} style={{ flexShrink: 0 }} />
+            <span style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {state.activeAlert}
+            </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ fontSize: '12px', opacity: 0.9 }}>FAULT CODE: {state.activeSimulation || 'PARAM_EXCURSION'}</span>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
+            <span style={{ fontSize: '12px', opacity: 0.9 }}>
+              FAULT CODE: {state.activeSimulation || 'PARAM_EXCURSION'}
+            </span>
             <Link
               to="/simulation"
               style={{
@@ -158,10 +180,89 @@ export const Header: React.FC = () => {
             >
               Open Diagnostic Lab &rarr;
             </Link>
+
+            {/* Clear Button */}
+            <button
+              onClick={handleClearAlert}
+              title="Clear this notification banner"
+              style={{
+                background: 'rgba(0, 0, 0, 0.08)',
+                border: '1px solid rgba(0, 0, 0, 0.15)',
+                borderRadius: '6px',
+                padding: '4px 10px',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                color: 'inherit',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0, 0, 0, 0.16)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0, 0, 0, 0.08)')}
+            >
+              <X size={14} />
+              <span>Clear</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* When cleared, display an acknowledged status strip so notifications are not removed in entirety */}
+      {state.activeAlert && isAlertDismissed && (
+        <div style={{
+          padding: '0.35rem 2rem',
+          backgroundColor: '#fafbfc',
+          borderBottom: '1px solid var(--border-subtle)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '12px',
+          color: 'var(--text-secondary)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              backgroundColor: state.overallRisk === 'critical' ? '#dc2626' : '#f59e0b',
+              display: 'inline-block'
+            }} />
+            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+              1 Active Alarm Acknowledged:
+            </span>
+            <span style={{ color: 'var(--text-muted)' }}>
+              {state.activeAlert}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Link to="/simulation" style={{ color: '#0284c7', textDecoration: 'none', fontWeight: 600 }}>
+              Diagnostic Lab
+            </Link>
+            <button
+              onClick={handleRestoreAlert}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#0284c7',
+                fontWeight: 700,
+                fontSize: '12px',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '2px'
+              }}
+            >
+              Show Banner Again
+            </button>
           </div>
         </div>
       )}
     </header>
   );
 };
+
 
