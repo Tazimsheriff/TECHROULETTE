@@ -37,8 +37,9 @@ FreshVault Twin creates a continuous virtual representation of a solar-powered c
    - Regional commodity blueprints for India (Tomatoes), Kenya (French Beans), Bangladesh (Raw Dairy), and Indonesia (Artisanal Tuna).
    - Standard Operating Procedures (SOPs) for rural solar microgrid operations.
 
-6. **Wokwi ESP32 Virtual Sensor Blueprint**:
-   - Located in `backend/wokwi_sketch/`: includes firmware (`sketch.ino`), circuit wiring diagram (`diagram.json`), and setup guide to connect web-simulated IoT hardware directly to the backend.
+6. **Wokwi ESP32 Hardware Twin & Live Gateway**:
+   - Located in `WOKWI/`: complete PlatformIO & Wokwi virtual hardware project including firmware (`sketch.ino`), wiring diagram (`diagram.json`), SSD1306 OLED display, DHT22 room sensor, DS18B20 food pulp probe, 4 LEDs, buzzer, and 3 pushbuttons.
+   - Live Python gateway bridge (`backend/wokwi_bridge.py`) for serial ingestion, stdin pipe, or interactive terminal simulation (`--simulate`).
 
 ---
 
@@ -46,7 +47,7 @@ FreshVault Twin creates a continuous virtual representation of a solar-powered c
 
 - **Frontend**: React 19, TypeScript, Vite, React Three Fiber, Three.js, Recharts, Lucide Icons, QR Code SVG.
 - **Backend**: Python 3.11, FastAPI, Uvicorn, Pydantic, SQLite3.
-- **IoT Firmware**: ESP32 C++ (DHT22 / DS18B20 / Wokwi Web Simulator).
+- **IoT Firmware**: ESP32 C++ (DHT22, DS18B20, SSD1306 OLED, ArduinoJson, PlatformIO, Wokwi).
 
 ---
 
@@ -59,9 +60,9 @@ FreshVault Twin creates a continuous virtual representation of a solar-powered c
 ### 2. Backend Setup
 ```bash
 # Navigate to project root
-python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-The FastAPI backend and interactive documentation will be available at `http://127.0.0.1:8000/docs`.
+The FastAPI backend and interactive OpenAPI documentation will be available at `http://127.0.0.1:8000/docs`.
 
 ### 3. Frontend Setup
 ```bash
@@ -71,13 +72,25 @@ npm run dev
 ```
 Open `http://localhost:5173` in your browser.
 
+### 4. WOKWI ESP32 Hardware Simulator & Live Bridge
+```bash
+# Option A: Run the virtual hardware bridge in interactive simulation mode
+python backend/wokwi_bridge.py --simulate
+
+# Option B: Connect real or virtual COM port (115200 baud)
+python backend/wokwi_bridge.py --port COM3 --baud 115200
+```
+
 ---
 
 ## Architecture Diagram
 
 ```
-[ Wokwi ESP32 / IoT Node ]
-          │ (HTTP POST /api/sensor-data)
+[ Wokwi ESP32 Virtual MCU / Hardware ]
+          │ (115200 Baud Serial / JSON)
+          ▼
+[ Wokwi Python Gateway Bridge (backend/wokwi_bridge.py) ]
+          │ (HTTP POST /api/wokwi/telemetry)
           ▼
 [ FastAPI Backend Engine ] ──► [ Respiration Kinetics & Physics Model ]
           │                ──► [ SQLite Audit & Telemetry Database ]

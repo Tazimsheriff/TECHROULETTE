@@ -55,9 +55,34 @@ class SensorPayload(BaseModel):
     doorOpen: Optional[bool] = None
     coolingOn: Optional[bool] = None
 
+class WokwiTelemetryPayload(BaseModel):
+    timestampMillis: Optional[int] = None
+    roomTemperatureRaw: Optional[float] = None
+    roomTemperatureEffective: float
+    humidity: float
+    productTemperatureRaw: Optional[float] = None
+    productTemperatureEffective: Optional[float] = None
+    solarWatts: Optional[float] = None
+    batteryPercent: Optional[float] = None
+    solarDrop: Optional[bool] = None
+    doorOpen: Optional[bool] = None
+    refrigerationFault: Optional[bool] = None
+    coolingOn: Optional[bool] = None
+    refrigerationHealth: Optional[str] = None
+    risk: Optional[str] = None
+    batchId: Optional[str] = None
+    crop: Optional[str] = None
+    quantityKg: Optional[float] = None
+    storageAgeHours: Optional[float] = None
+    exposureMinutes: Optional[float] = None
+    qualityScore: Optional[float] = None
+    shelfLifeDays: Optional[float] = None
+    recommendation: Optional[str] = None
+
 class SimulationRequest(BaseModel):
     scenario: Literal["cooling-failure", "door-open", "solar-failure", "battery-low", "transport-delay", "ambient-heat-spike", "reset"]
     intensity: Optional[float] = 1.0
 
 class TickRequest(BaseModel):
     deltaMinutes: float = 15.0
+
