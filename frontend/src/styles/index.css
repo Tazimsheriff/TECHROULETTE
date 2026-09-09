@@ -332,6 +332,17 @@ body {
   border-bottom: 1px solid var(--border-hairline);
 }
 
+.viewport-3d.fullscreen-active {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+
 .viewport-overlay {
   position: absolute;
   top: 8px;

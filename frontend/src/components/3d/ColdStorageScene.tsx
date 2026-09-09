@@ -1,9 +1,10 @@
-import React, { useRef, useState, Suspense, useMemo } from 'react';
+import React, { useRef, useState, useEffect, Suspense, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useTwin } from '../../context/TwinContext';
 import { Batch } from '../../types';
+import { Maximize, Minimize, X } from 'lucide-react';
 
 // Helper to generate an authentic crisp printed batch lot plate in WebGL
 const useLotTexture = (id: string, score: number) => {
@@ -367,6 +368,8 @@ export const ColdStorageScene: React.FC<{
 }> = ({ enableControls = true, onSelectBatch }) => {
   const { state, selectedBatchId, setSelectedBatchId } = useTwin();
   const controlsRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const handleSelect = (id: string) => {
     setSelectedBatchId(id);
@@ -374,6 +377,46 @@ export const ColdStorageScene: React.FC<{
   };
 
   const isAlarm = state.overallRisk === 'critical' || state.temperature > 12.0;
+
+  const toggleFullscreen = () => {
+    if (!containerRef.current) return;
+    if (!document.fullscreenElement && !isFullscreen) {
+      if (containerRef.current.requestFullscreen) {
+        containerRef.current.requestFullscreen().then(() => {
+          setIsFullscreen(true);
+        }).catch(() => {
+          setIsFullscreen(true);
+        });
+      } else {
+        setIsFullscreen(true);
+      }
+    } else {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+      setIsFullscreen(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+        setIsFullscreen(false);
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isFullscreen]);
 
   // Engineering Camera Presets
   const setCameraView = (view: 'isometric' | 'front' | 'shelf' | 'chiller') => {
@@ -395,7 +438,10 @@ export const ColdStorageScene: React.FC<{
   };
 
   return (
-    <div className="viewport-3d">
+    <div
+      ref={containerRef}
+      className={`viewport-3d ${isFullscreen ? 'fullscreen-active' : ''}`}
+    >
       {/* Telemetry HUD */}
       <div className="viewport-overlay">
         <div className="viewport-badge">
@@ -407,6 +453,30 @@ export const ColdStorageScene: React.FC<{
         <div className="viewport-badge">
           EVAP FAN: <strong style={{ color: state.coolingOn ? '#22c55e' : '#ef4444' }}>{state.coolingOn ? `${state.fanRpm} RPM` : 'STANDSTILL'}</strong>
         </div>
+        {isFullscreen && selectedBatchId && (
+          <div className="viewport-badge" style={{ backgroundColor: 'rgba(21, 128, 61, 0.95)', color: '#fff' }}>
+            SELECTED LOT: <strong>{selectedBatchId}</strong>
+          </div>
+        )}
+      </div>
+
+      {/* Top Right Fullscreen & Close Controls */}
+      <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 100, display: 'flex', gap: 6, alignItems: 'center' }}>
+        <button
+          className="btn btn-sm"
+          onClick={toggleFullscreen}
+          title={isFullscreen ? 'Exit Fullscreen Mode [ESC]' : 'Enter Fullscreen 3D Mode'}
+          style={{
+            backgroundColor: isFullscreen ? '#b91c1c' : '#0f172a',
+            color: '#ffffff',
+            borderColor: isFullscreen ? '#b91c1c' : '#1e293b',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+            fontWeight: 700
+          }}
+        >
+          {isFullscreen ? <Minimize size={12} /> : <Maximize size={12} />}
+          <span>{isFullscreen ? 'Exit Fullscreen [ESC]' : 'Fullscreen'}</span>
+        </button>
       </div>
 
       {/* Engineering Viewpoint Selector */}
