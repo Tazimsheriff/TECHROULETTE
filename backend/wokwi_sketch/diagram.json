@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "author": "FreshVault Twin Team",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht", "top": -90, "left": 180, "attrs": { "temperature": "6.2", "humidity": "84" } },
+    { "type": "wokwi-pushbutton", "id": "btn_door", "top": 120, "left": -120, "attrs": { "color": "yellow", "label": "Door Switch" } },
+    { "type": "wokwi-pushbutton", "id": "btn_fault", "top": 180, "left": -120, "attrs": { "color": "red", "label": "Cooling Fault" } },
+    { "type": "wokwi-led", "id": "led_cool", "top": -40, "left": -80, "attrs": { "color": "green", "label": "Chiller" } },
+    { "type": "wokwi-led", "id": "led_alarm", "top": 20, "left": -80, "attrs": { "color": "red", "label": "Alarm" } }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "esp:GND.1", "dht:GND", "black", [ "v0" ] ],
+    [ "esp:3V3", "dht:VCC", "red", [ "v0" ] ],
+    [ "esp:D15", "dht:SDA", "green", [ "v0" ] ],
+    [ "esp:D4", "btn_door:1.r", "orange", [ "v0" ] ],
+    [ "esp:GND.2", "btn_door:2.r", "black", [ "v0" ] ],
+    [ "esp:D5", "btn_fault:1.r", "red", [ "v0" ] ],
+    [ "esp:GND.2", "btn_fault:2.r", "black", [ "v0" ] ],
+    [ "esp:D18", "led_cool:A", "green", [ "v0" ] ],
+    [ "esp:GND.1", "led_cool:C", "black", [ "v0" ] ],
+    [ "esp:D19", "led_alarm:A", "red", [ "v0" ] ],
+    [ "esp:GND.1", "led_alarm:C", "black", [ "v0" ] ]
+  ]
+}
