@@ -128,29 +128,87 @@ def run_simulation_mode(backend_url: str):
         "running": True
     }
 
+    state["buzzerActive"] = False
+
     def print_menu():
-        print("\n" + "=" * 62)
+        print("\n" + "=" * 64)
         print("  FRESHVAULT TWIN - WOKWI ESP32 SENSOR EMULATOR GATEWAY")
-        print("=" * 62)
+        print("=" * 64)
         print("  Controls:")
-        print("    [d] + Enter : Toggle Chamber Door (Open/Closed)")
-        print("    [f] + Enter : Toggle Compressor Refrigeration Fault")
-        print("    [s] + Enter : Toggle Solar Irradiance Drop (Cloud/Night)")
-        print("    [r] + Enter : Reset all conditions to nominal")
-        print("    [q] + Enter : Quit simulation")
-        print("=" * 62 + "\n")
+        print("    [d]     + Enter : Toggle Chamber Door (Open/Closed) -> Beeps while open")
+        print("    [d+f]   + Enter : Door Open + Cooling Fault -> Continuous Alarm Beep")
+        print("    [f]     + Enter : Toggle Compressor Refrigeration Fault")
+        print("    [s]     + Enter : Toggle Solar Irradiance Drop (Cloud/Night)")
+        print("    [stop]  + Enter : Stop / Mute active buzzer alarm")
+        print("    [r]     + Enter : Reset all conditions to nominal (Stops alarm)")
+        print("    [q]     + Enter : Quit simulation")
+        print("=" * 64 + "\n")
 
     print_menu()
+
+    # Dedicated continuous terminal audio buzzer thread (GPIO 18 Buzzer Emulation)
+    def buzzer_thread():
+        try:
+            import winsound
+            has_winsound = True
+        except ImportError:
+            has_winsound = False
+
+        toggle_freq = False
+        while state["running"]:
+            # Beep continuously as long as door is open, refrigeration fault, or buzzerActive
+            should_beep = state["doorOpen"] or state["buzzerActive"] or state["refrigerationFault"]
+            if should_beep:
+                freq = 880 if toggle_freq else 660
+                toggle_freq = not toggle_freq
+                if has_winsound:
+                    try:
+                        winsound.Beep(freq, 220)
+                    except Exception:
+                        sys.stdout.write('\a')
+                        sys.stdout.flush()
+                else:
+                    sys.stdout.write('\a')
+                    sys.stdout.flush()
+                time.sleep(0.18)
+            else:
+                time.sleep(0.1)
+
+    audio_buzzer = threading.Thread(target=buzzer_thread, daemon=True)
+    audio_buzzer.start()
 
     def input_thread():
         while state["running"]:
             try:
-                cmd = sys.stdin.readline().strip().lower()
-                if cmd == 'd':
+                raw = sys.stdin.readline()
+                if not raw:
+                    break
+                cmd = raw.strip().lower()
+                
+                # Handle d+f or df compound trigger
+                if cmd in ['d+f', 'df', 'd f', 'fd', 'f+d', 'f d']:
+                    state["doorOpen"] = True
+                    state["refrigerationFault"] = True
+                    state["buzzerActive"] = True
+                    print(f"\n\033[91m>>> [ALARM TRIGGER] DOOR OPEN + COOLING FAULT ACTIVATED!\033[0m")
+                    print(f"\033[93m>>> [BUZZER ACTIVE] Continuous alarm beeping (GPIO 18)... Type 'd', 'stop', or 'r' to stop it.\033[0m")
+                elif cmd == 'd':
                     state["doorOpen"] = not state["doorOpen"]
-                    print(f"\n\033[93m>>> [BUTTON TRIGGER] Door Open changed to: {state['doorOpen']}\033[0m")
+                    if state["doorOpen"]:
+                        state["buzzerActive"] = True
+                        print(f"\n\033[93m>>> [BUTTON TRIGGER] Chamber Door OPENED!\033[0m")
+                        print(f"\033[91m>>> [BUZZER ACTIVE] Continuous door open alarm beeping... Type 'd' or 'stop' to close door and stop beep.\033[0m")
+                    else:
+                        state["buzzerActive"] = False
+                        print(f"\n\033[92m>>> [BUTTON TRIGGER] Chamber Door CLOSED. Buzzer stopped.\033[0m")
                 elif cmd == 'f':
                     state["refrigerationFault"] = not state["refrigerationFault"]
+                    if state["refrigerationFault"]:
+                        state["buzzerActive"] = True
+                        print(f"\n\033[91m>>> [BUTTON TRIGGER] Compressor Fault INJECTED! Continuous buzzer alarm active.\033[0m")
+                    else:
+                        if not state["doorOpen"]:
+                            state["buzzerActive"] = False
                     print(f"\n\033[91m>>> [BUTTON TRIGGER] Refrigeration Fault changed to: {state['refrigerationFault']}\033[0m")
                 elif cmd == 's':
                     state["solarDrop"] = not state["solarDrop"]
@@ -163,7 +221,7 @@ def run_simulation_mode(backend_url: str):
                     state["shelfLifeDays"] = 100.0 / 15.0
                     state["exposureMinutes"] = 0.0
                     state["batteryPercent"] = 85.0
-                    print(f"\n\033[92m>>> [RESET] Twin state restored to nominal storage conditions.\033[0m")
+                    print(f"\n\033[92m>>> [RESET] Twin state restored to nominal storage conditions. Beep stopped.\033[0m")
                 elif cmd == 'q':
                     state["running"] = False
                     break
