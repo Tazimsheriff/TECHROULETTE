@@ -20,6 +20,7 @@ import {
   ExternalLink,
   Sliders
 } from 'lucide-react';
+import { playClickSound } from '../../utils/soundEffects';
 
 export const WokwiCircuitSimulator: React.FC = () => {
   const { state, triggerSimulation } = useTwin();
@@ -59,6 +60,7 @@ export const WokwiCircuitSimulator: React.FC = () => {
 
   // Interactive hardware button triggers
   const handleButtonPress = async (action: 'door' | 'fault' | 'solar' | 'reset') => {
+    playClickSound();
     if (action === 'door') {
       await triggerSimulation('door-open');
     } else if (action === 'fault') {

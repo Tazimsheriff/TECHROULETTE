@@ -16,16 +16,19 @@ import {
   AlertTriangle,
   CheckCircle2
 } from 'lucide-react';
+import { playClickSound } from '../utils/soundEffects';
 
 export const SimulationLabPage: React.FC = () => {
   const { state, triggerSimulation, tickSimulation } = useTwin();
   const [accelerating, setAccelerating] = useState(false);
 
   const handleScenario = async (action: SimulationAction) => {
+    playClickSound();
     await triggerSimulation(action);
   };
 
   const handleTick = async (minutes: number) => {
+    playClickSound();
     setAccelerating(true);
     await tickSimulation(minutes);
     setTimeout(() => setAccelerating(false), 250);

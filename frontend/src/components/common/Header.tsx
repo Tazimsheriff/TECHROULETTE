@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTwin } from '../../context/TwinContext';
 import {
@@ -11,8 +11,18 @@ import {
   MapPin,
   LineChart,
   BookOpen,
-  X
+  X,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
+import {
+  startCriticalAlarm,
+  stopCriticalAlarm,
+  playWarningAlert,
+  playRestoreChime,
+  isAudioMuted,
+  toggleAudioMute
+} from '../../utils/soundEffects';
 
 export const Header: React.FC = () => {
   const { state } = useTwin();
@@ -20,6 +30,28 @@ export const Header: React.FC = () => {
 
   const [isAlertDismissed, setIsAlertDismissed] = useState(false);
   const [acknowledgedAlert, setAcknowledgedAlert] = useState<string | null>(null);
+  const [muted, setMuted] = useState<boolean>(isAudioMuted());
+  const prevRiskRef = useRef<string>(state.overallRisk);
+
+  // Sound effects logic responsive to system risk state
+  useEffect(() => {
+    const prev = prevRiskRef.current;
+    prevRiskRef.current = state.overallRisk;
+
+    if (state.overallRisk === 'critical' && !isAlertDismissed) {
+      startCriticalAlarm();
+    } else if (state.overallRisk === 'warning') {
+      stopCriticalAlarm();
+      if (prev !== 'warning') {
+        playWarningAlert();
+      }
+    } else if (state.overallRisk === 'safe') {
+      stopCriticalAlarm();
+      if (prev === 'critical' || prev === 'warning') {
+        playRestoreChime();
+      }
+    }
+  }, [state.overallRisk, isAlertDismissed]);
 
   // If a new alert message appears, make sure the banner pops up again
   useEffect(() => {
@@ -31,10 +63,19 @@ export const Header: React.FC = () => {
   const handleClearAlert = () => {
     setIsAlertDismissed(true);
     setAcknowledgedAlert(state.activeAlert);
+    stopCriticalAlarm();
   };
 
   const handleRestoreAlert = () => {
     setIsAlertDismissed(false);
+    if (state.overallRisk === 'critical') {
+      startCriticalAlarm();
+    }
+  };
+
+  const handleToggleMute = () => {
+    const next = toggleAudioMute();
+    setMuted(next);
   };
 
   const navItems = [
@@ -87,6 +128,31 @@ export const Header: React.FC = () => {
               );
             })}
           </ul>
+
+          {/* SCADA Alarm Audio Mute / Unmute Button */}
+          <button
+            onClick={handleToggleMute}
+            title={muted ? "Unmute SCADA Alarm Audio" : "Mute SCADA Alarm Audio"}
+            style={{
+              marginLeft: '0.65rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              padding: '0.35rem 0.65rem',
+              fontSize: '12px',
+              fontWeight: 700,
+              borderRadius: '8px',
+              border: muted ? '1px solid #cbd5e1' : '1px solid #86efac',
+              backgroundColor: muted ? '#f1f5f9' : '#f0fdf4',
+              color: muted ? '#64748b' : '#15803d',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            {muted ? <VolumeX size={14} color="#64748b" /> : <Volume2 size={14} color="#16a34a" />}
+            <span>{muted ? 'Audio Muted' : 'Audio Live'}</span>
+          </button>
         </nav>
       </div>
 
