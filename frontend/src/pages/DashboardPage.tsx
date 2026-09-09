@@ -72,25 +72,25 @@ export const DashboardPage: React.FC = () => {
       {/* Main View Tabs (Separating content so nothing feels stuffed) */}
       <div className="tab-switcher">
         <button
-          className={`tab-btn ${activeTab === 'twin' ? 'active' : ''}`}
+          className={`tab-btn tab-twin ${activeTab === 'twin' ? 'active' : ''}`}
           onClick={() => setActiveTab('twin')}
         >
-          <Box size={16} />
-          3D Cold-Room Twin & Produce
+          <Box size={18} color={activeTab === 'twin' ? '#0284c7' : '#64748b'} />
+          <span>3D Cold-Room Twin & Produce</span>
         </button>
         <button
-          className={`tab-btn ${activeTab === 'sensors' ? 'active' : ''}`}
+          className={`tab-btn tab-sensors ${activeTab === 'sensors' ? 'active' : ''}`}
           onClick={() => setActiveTab('sensors')}
         >
-          <Activity size={16} />
-          Temperature & Facility Sensors ({state.temperature}°C)
+          <Activity size={18} color={activeTab === 'sensors' ? '#059669' : '#64748b'} />
+          <span>Temperature & Facility Sensors ({state.temperature}°C)</span>
         </button>
         <button
-          className={`tab-btn ${activeTab === 'batches' ? 'active' : ''}`}
+          className={`tab-btn tab-batches ${activeTab === 'batches' ? 'active' : ''}`}
           onClick={() => setActiveTab('batches')}
         >
-          <Layers size={16} />
-          Produce Inventory & Lifespan ({state.batches.length} Lots)
+          <Layers size={18} color={activeTab === 'batches' ? '#7c3aed' : '#64748b'} />
+          <span>Produce Inventory & Lifespan ({state.batches.length} Lots)</span>
         </button>
       </div>
 
