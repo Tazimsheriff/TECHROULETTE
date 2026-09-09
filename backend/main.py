@@ -258,3 +258,49 @@ def inspect_batch(batch_id: str, action: str = "certify"):
         raise HTTPException(status_code=404, detail="Batch not found")
 
     return CURRENT_STATE
+
+@app.get("/api/network-ip")
+def get_network_ip():
+    import subprocess
+    import re
+    import socket
+
+    ips = []
+    try:
+        out = subprocess.check_output("ipconfig", text=True, timeout=2)
+        current_adapter = "Network"
+        for line in out.splitlines():
+            line_str = line.strip()
+            if "adapter" in line_str:
+                current_adapter = line_str.split("adapter")[-1].replace(":", "").strip()
+            if "IPv4 Address" in line_str or "IPv4-Adresse" in line_str:
+                m = re.search(r":\s*([0-9.]+)", line_str)
+                if m:
+                    ip = m.group(1).strip()
+                    if not ip.startswith("127.") and not ip.startswith("169.254."):
+                        ips.append({"ip": ip, "name": current_adapter})
+    except Exception:
+        pass
+
+    if not ips:
+        try:
+            hostname = socket.gethostname()
+            for info in socket.getaddrinfo(hostname, None):
+                candidate = info[4][0]
+                if ":" not in candidate and not candidate.startswith("127.") and not candidate.startswith("169.254."):
+                    if not any(item["ip"] == candidate for item in ips):
+                        ips.append({"ip": candidate, "name": "LAN Interface"})
+        except Exception:
+            pass
+
+    primary_ip = ips[0]["ip"] if ips else "127.0.0.1"
+    for item in ips:
+        if "wi-fi" in item["name"].lower() or item["ip"].startswith("192.168."):
+            primary_ip = item["ip"]
+            break
+
+    return {
+        "primary_ip": primary_ip,
+        "interfaces": ips if ips else [{"ip": "127.0.0.1", "name": "Localhost"}]
+    }
+

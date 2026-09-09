@@ -2,24 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTwin } from '../../context/TwinContext';
 import {
-  MapPin,
   AlertTriangle,
-  RotateCcw,
-  Zap,
   LayoutDashboard,
   Activity,
   Box,
   Sliders,
   Layers,
+  MapPin,
   LineChart,
   BookOpen,
-  CheckCircle2,
-  X,
-  Bell
+  X
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const { state, isConnected, triggerSimulation } = useTwin();
+  const { state } = useTwin();
   const location = useLocation();
 
   const [isAlertDismissed, setIsAlertDismissed] = useState(false);
@@ -54,64 +50,6 @@ export const Header: React.FC = () => {
 
   return (
     <header className="control-header">
-      {/* Top telemetry status bar */}
-      <div className="header-topbar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--text-secondary)' }}>
-            <MapPin size={14} color="#0284c7" />
-            <span style={{ fontWeight: 700, fontSize: '13px' }}>{state.facilityId}</span>
-            <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>• {state.location}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderLeft: '1px solid var(--border-subtle)', paddingLeft: '1rem' }}>
-            <span className={`pulse-dot ${isConnected ? 'online' : 'alert'}`} />
-            <span style={{ color: isConnected ? '#15803d' : '#dc2626', fontWeight: 600, fontSize: '12px' }}>
-              {isConnected ? 'LIVE BMS LINK (ESP32/WOKWI ONLINE)' : 'SIMULATED COLD-CHAIN STATE'}
-            </span>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ fontSize: '13px', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <span>
-              <span style={{ color: 'var(--text-muted)' }}>Solar PV: </span>
-              <strong style={{ color: '#ea580c' }}>{state.solarPower} W</strong>
-            </span>
-            <span>
-              <span style={{ color: 'var(--text-muted)' }}>Battery: </span>
-              <strong style={{ color: state.batteryPercent < 25 ? '#dc2626' : '#15803d' }}>
-                {state.batteryPercent}%
-              </strong>
-            </span>
-            <span>
-              <span style={{ color: 'var(--text-muted)' }}>Storage Temp: </span>
-              <strong style={{ color: state.temperature > 12 ? '#dc2626' : '#15803d' }}>
-                {state.temperature}°C
-              </strong>
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderLeft: '1px solid var(--border-subtle)', paddingLeft: '1rem' }}>
-            <button
-              className="btn btn-sm btn-danger"
-              onClick={() => triggerSimulation('cooling-failure')}
-              title="Test cooling fault chain-reaction"
-              style={{ padding: '0.35rem 0.75rem', fontSize: '12px', fontWeight: 600 }}
-            >
-              <Zap size={13} />
-              Fault Trip
-            </button>
-            <button
-              className="btn btn-sm"
-              onClick={() => triggerSimulation('reset')}
-              title="Reset twin state to nominal"
-              style={{ padding: '0.35rem 0.75rem', fontSize: '12px' }}
-            >
-              <RotateCcw size={13} />
-              Reset
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* Main branding & color navigation row */}
       <div className="header-main">

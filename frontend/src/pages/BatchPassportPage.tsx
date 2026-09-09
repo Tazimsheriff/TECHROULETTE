@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import { useTwin } from '../context/TwinContext';
@@ -23,7 +23,11 @@ import {
   Printer,
   Sparkles,
   Layers,
-  Info
+  Info,
+  Smartphone,
+  Wifi,
+  Globe,
+  Edit3
 } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
@@ -31,14 +35,57 @@ export const BatchPassportPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { state, inspectBatch } = useTwin();
   const [copied, setCopied] = useState(false);
+  const [copiedMobile, setCopiedMobile] = useState(false);
+
+  const [networkInterfaces, setNetworkInterfaces] = useState<Array<{ ip: string; name: string }>>([]);
+  const [selectedHost, setSelectedHost] = useState<string>('');
+  const [customHost, setCustomHost] = useState<string>('');
+  const [isEditingHost, setIsEditingHost] = useState<boolean>(false);
 
   const batch = state.batches.find((b) => b.id.toUpperCase() === (id || '').toUpperCase()) || state.batches[0];
-  const passportUrl = window.location.href;
+
+  useEffect(() => {
+    fetch('/api/network-ip')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.interfaces && Array.isArray(data.interfaces)) {
+          setNetworkInterfaces(data.interfaces);
+        }
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          if (data.primary_ip && data.primary_ip !== '127.0.0.1') {
+            setSelectedHost(data.primary_ip);
+          } else if (data.interfaces && data.interfaces.length > 0) {
+            setSelectedHost(data.interfaces[0].ip);
+          }
+        } else {
+          setSelectedHost(window.location.hostname);
+        }
+      })
+      .catch(() => {
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          setSelectedHost('172.16.43.67');
+        } else {
+          setSelectedHost(window.location.hostname);
+        }
+      });
+  }, []);
+
+  const port = window.location.port ? `:${window.location.port}` : '';
+  const protocol = window.location.protocol;
+  const activeHost = selectedHost || window.location.hostname;
+  const mobilePassportUrl = `${protocol}//${activeHost}${port}/batch/${batch.id}`;
+  const desktopUrl = window.location.href;
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(passportUrl);
+    navigator.clipboard.writeText(desktopUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleCopyMobileLink = () => {
+    navigator.clipboard.writeText(mobilePassportUrl);
+    setCopiedMobile(true);
+    setTimeout(() => setCopiedMobile(false), 2500);
   };
 
   const handlePrint = () => {
@@ -418,7 +465,7 @@ export const BatchPassportPage: React.FC = () => {
                 backgroundColor: '#ffffff',
                 border: '2px solid #e2e8f0',
                 borderRadius: '16px',
-                padding: '2rem',
+                padding: '1.75rem',
                 textAlign: 'center',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.03)'
               }}>
@@ -426,15 +473,16 @@ export const BatchPassportPage: React.FC = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.4rem',
-                  padding: '4px 12px',
+                  padding: '5px 14px',
                   backgroundColor: '#eff6ff',
                   borderRadius: '20px',
                   fontSize: '12px',
                   fontWeight: 800,
                   color: '#1d4ed8',
-                  marginBottom: '1.25rem'
+                  marginBottom: '1rem'
                 }}>
-                  FIELD SCANNABLE QR CODE
+                  <Smartphone size={14} />
+                  SMARTPHONE VERIFICATION QR
                 </div>
 
                 <div style={{
@@ -447,29 +495,201 @@ export const BatchPassportPage: React.FC = () => {
                   marginBottom: '1rem'
                 }}>
                   <QRCodeSVG
-                    value={passportUrl}
-                    size={175}
+                    value={mobilePassportUrl}
+                    size={180}
                     level="H"
                     includeMargin={false}
                   />
                 </div>
 
-                <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
-                  Scan with any smartphone camera
+                <div style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', marginBottom: '4px' }}>
+                  Scan with Your Phone Camera
                 </div>
-                <div style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5, maxWidth: '240px', margin: '0 auto 1.25rem' }}>
-                  Instantly verify farm origin, temperature compliance, and shelf-life on mobile.
+                <div style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5, margin: '0 auto 1rem' }}>
+                  Opens the live digital product passport directly in your mobile browser.
                 </div>
 
+                {/* Mobile URL & Quick Copy */}
                 <div style={{
-                  padding: '8px 12px',
-                  backgroundColor: '#f1f5f9',
-                  borderRadius: '8px',
-                  fontSize: '12px',
-                  color: '#475569',
-                  fontFamily: 'monospace'
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '10px',
+                  padding: '0.6rem 0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '0.5rem',
+                  marginBottom: '1rem',
+                  textAlign: 'left'
                 }}>
-                  HASH: {batch.id}-SEC-2026-CODEX
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
+                      Mobile Passport URL
+                    </div>
+                    <div style={{
+                      fontSize: '13px',
+                      fontFamily: 'monospace',
+                      fontWeight: 700,
+                      color: '#0284c7',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      {mobilePassportUrl}
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleCopyMobileLink}
+                    title="Copy mobile link"
+                    style={{
+                      padding: '0.4rem 0.75rem',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      backgroundColor: copiedMobile ? '#16a34a' : '#0284c7',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      flexShrink: 0
+                    }}
+                  >
+                    {copiedMobile ? <Check size={13} /> : <Copy size={13} />}
+                    {copiedMobile ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+
+                {/* Network IP Switcher for Localhost / Wi-Fi */}
+                <div style={{
+                  backgroundColor: '#f1f5f9',
+                  borderRadius: '10px',
+                  padding: '0.85rem',
+                  marginBottom: '1rem',
+                  textAlign: 'left'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <Wifi size={13} color="#0284c7" />
+                      Host Network IP for Phone:
+                    </span>
+                    <button
+                      onClick={() => setIsEditingHost(!isEditingHost)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#0284c7',
+                        fontSize: '11.5px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '3px'
+                      }}
+                    >
+                      <Edit3 size={11} />
+                      {isEditingHost ? 'Close' : 'Custom IP'}
+                    </button>
+                  </div>
+
+                  {/* Pre-detected IP buttons */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: isEditingHost ? '0.6rem' : '0' }}>
+                    {networkInterfaces.map((iface) => {
+                      const isSelected = activeHost === iface.ip;
+                      return (
+                        <button
+                          key={iface.ip}
+                          onClick={() => setSelectedHost(iface.ip)}
+                          style={{
+                            padding: '4px 10px',
+                            fontSize: '11.5px',
+                            fontWeight: isSelected ? 800 : 600,
+                            backgroundColor: isSelected ? '#0284c7' : '#ffffff',
+                            color: isSelected ? '#ffffff' : '#334155',
+                            border: `1px solid ${isSelected ? '#0284c7' : '#cbd5e1'}`,
+                            borderRadius: '6px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {iface.name}: {iface.ip}
+                        </button>
+                      );
+                    })}
+                    <button
+                      onClick={() => setSelectedHost('127.0.0.1')}
+                      style={{
+                        padding: '4px 8px',
+                        fontSize: '11px',
+                        fontWeight: activeHost === '127.0.0.1' ? 800 : 500,
+                        backgroundColor: activeHost === '127.0.0.1' ? '#475569' : '#ffffff',
+                        color: activeHost === '127.0.0.1' ? '#ffffff' : '#64748b',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '6px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Localhost
+                    </button>
+                  </div>
+
+                  {/* Custom IP input field */}
+                  {isEditingHost && (
+                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem' }}>
+                      <input
+                        type="text"
+                        placeholder="e.g. 192.168.1.4 or your IP"
+                        value={customHost}
+                        onChange={(e) => setCustomHost(e.target.value)}
+                        style={{
+                          flex: 1,
+                          padding: '4px 8px',
+                          fontSize: '12px',
+                          borderRadius: '6px',
+                          border: '1px solid #cbd5e1'
+                        }}
+                      />
+                      <button
+                        onClick={() => {
+                          if (customHost.trim()) {
+                            setSelectedHost(customHost.trim());
+                            setIsEditingHost(false);
+                          }
+                        }}
+                        style={{
+                          padding: '4px 10px',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          backgroundColor: '#0284c7',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Set
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* 3-Step Phone Scanning Guide */}
+                <div style={{
+                  padding: '0.75rem',
+                  backgroundColor: '#ecfdf5',
+                  border: '1px solid #a7f3d0',
+                  borderRadius: '10px',
+                  textAlign: 'left',
+                  fontSize: '12px',
+                  color: '#065f46',
+                  lineHeight: 1.5
+                }}>
+                  <strong style={{ display: 'block', color: '#047857', marginBottom: '3px' }}>
+                    📱 How to View on Your Phone:
+                  </strong>
+                  1. Connect your phone to the <strong>same Wi-Fi network</strong> as this computer (or laptop hotspot).<br />
+                  2. Open your phone camera app and point it at the QR code above.<br />
+                  3. Tap the pop-up link to view this batch's live digital passport!
                 </div>
               </div>
 
