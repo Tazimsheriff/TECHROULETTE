@@ -161,44 +161,59 @@ export const BatchPassportPage: React.FC = () => {
   return (
     <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '0.5rem 0 3rem' }}>
       
-      {/* Top Bar Actions */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <Link
-          to="/batches"
-          className="btn"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.6rem 1.15rem',
-            fontSize: '14px',
-            fontWeight: 600,
+      {/* Official Digital Passport Navigation Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '0.75rem',
+        padding: '0.5rem 0'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <div style={{
+            width: 36,
+            height: 36,
             borderRadius: '8px',
-            backgroundColor: '#ffffff',
-            border: '1px solid #cbd5e1'
-          }}
-        >
-          <ArrowLeft size={16} /> Return to Produce Ledger
-        </Link>
+            backgroundColor: '#0284c7',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#ffffff',
+            fontWeight: 800,
+            fontSize: '14px',
+            boxShadow: '0 2px 8px rgba(2, 132, 199, 0.25)'
+          }}>
+            FV
+          </div>
+          <div>
+            <div style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', lineHeight: 1.2 }}>
+              FreshVault • Digital Product Passport
+            </div>
+            <div style={{ fontSize: '12px', color: '#64748b' }}>
+              UN-FAO South-South Cooperation (SSTC) Verified Ledger Entry
+            </div>
+          </div>
+        </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <button
-            onClick={handleCopyLink}
+            onClick={handleCopyMobileLink}
             className="btn"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.6rem 1.15rem',
-              fontSize: '14px',
-              fontWeight: 600,
+              gap: '0.4rem',
+              padding: '0.5rem 0.85rem',
+              fontSize: '13px',
+              fontWeight: 700,
               borderRadius: '8px',
               backgroundColor: '#ffffff',
               border: '1px solid #cbd5e1'
             }}
           >
-            {copied ? <Check size={16} color="#16a34a" /> : <Copy size={16} />}
-            <span>{copied ? 'Link Copied!' : 'Copy Passport URL'}</span>
+            {copiedMobile ? <Check size={14} color="#16a34a" /> : <Copy size={14} />}
+            <span>{copiedMobile ? 'Copied!' : 'Share'}</span>
           </button>
 
           <button
@@ -207,18 +222,37 @@ export const BatchPassportPage: React.FC = () => {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.6rem 1.15rem',
-              fontSize: '14px',
-              fontWeight: 600,
+              gap: '0.4rem',
+              padding: '0.5rem 0.85rem',
+              fontSize: '13px',
+              fontWeight: 700,
               borderRadius: '8px',
               backgroundColor: '#ffffff',
               border: '1px solid #cbd5e1'
             }}
           >
-            <Printer size={16} />
-            <span>Print Passport</span>
+            <Printer size={14} />
+            <span>Print</span>
           </button>
+
+          <Link
+            to="/batches"
+            style={{
+              fontSize: '12.5px',
+              fontWeight: 700,
+              color: '#0284c7',
+              textDecoration: 'none',
+              padding: '0.5rem 0.85rem',
+              borderRadius: '8px',
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bae6fd',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <span>Facility Hub &rarr;</span>
+          </Link>
         </div>
       </div>
 
@@ -231,7 +265,7 @@ export const BatchPassportPage: React.FC = () => {
         boxShadow: '0 4px 20px rgba(0,0,0,0.04)'
       }}>
         {/* Document Official Header */}
-        <div style={{
+        <div className="passport-card-header" style={{
           padding: '1.75rem 2.25rem',
           backgroundColor: '#0f172a',
           color: '#ffffff',
@@ -281,9 +315,9 @@ export const BatchPassportPage: React.FC = () => {
         </div>
 
         {/* Passport Content Body */}
-        <div style={{ padding: '2.25rem' }}>
+        <div className="passport-card-body" style={{ padding: '2.25rem' }}>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '2.5rem', alignItems: 'start' }}>
+          <div className="passport-grid">
             
             {/* Left Column: Batch Size Data & Specifications */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

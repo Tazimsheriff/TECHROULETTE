@@ -656,3 +656,36 @@ body {
   50% { transform: scale(1.2); opacity: 0.5; }
   100% { transform: scale(0.95); opacity: 1; }
 }
+
+/* Dedicated Mobile Digital Product Passport Mode */
+.app-container.passport-mode {
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.main-content.passport-main {
+  padding: 0.75rem 1rem 3rem !important;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.passport-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .passport-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .passport-card-header {
+    padding: 1.25rem 1rem !important;
+  }
+  .passport-card-body {
+    padding: 1.25rem 1rem !important;
+  }
+}
+
